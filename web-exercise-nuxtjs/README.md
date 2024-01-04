@@ -21,7 +21,7 @@ git clone https://git.pride.improwised.dev/Onboarding-2024/Ashvin-Bambhaniya.git
 
 ## Build Setup
 
-For UI everything is under /app/ folder, so go to /app/ folder.
+For UI everything is under /web-exercise-nuxtjs/app/ folder, so go to /web-exercise-nuxtjs/app/ folder.
 
 * Go to `/web-exercise-nuxtjs/app/` folder. 
 
