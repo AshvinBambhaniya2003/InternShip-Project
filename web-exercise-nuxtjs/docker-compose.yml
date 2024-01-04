@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  web:
+    build:
+      context: ./app/
+      dockerfile: Dockerfile
+      args:
+        MODE: example
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - HOST=0.0.0.0
+    volumes:
+      - ./app/:/usr/src/app/
+  json-server:
+    build:
+      context: ./app/
+      dockerfile: jsonServer.Dockerfile
+    command: -H 0.0.0.0 -p 5000 -w db.json
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/data
+    restart: always
