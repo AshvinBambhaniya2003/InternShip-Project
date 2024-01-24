@@ -1,0 +1,42 @@
+version: "3.1"
+
+services:
+  # MySQL (Not mine)
+  db:
+    image: public.ecr.aws/docker/library/mysql:8.3.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: example
+      MYSQL_USER: example
+      MYSQL_PASSWORD: example
+    ports:
+      - 3306:3306
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # Mailhog
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+
+  # PHP
+  php:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env
+    ports:
+      - 9000:80
+    depends_on:
+      - db
+    command: bash -c "php artisan migrate --force && supervisord"
+    restart: always
+
+# volume
+volumes:
+  db_data:
+
