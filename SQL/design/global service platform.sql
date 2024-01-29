@@ -1,14 +1,26 @@
 -- Make sure to attach design image/pdf in the same folder.
 -- Write your DDL queries here.
 
--- // Use DBML to define your database structure
--- // Docs: https://dbml.dbdiagram.io/docs
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
 
 Table users {
   user_id integer [primary key]
   username varchar
   role varchar 
+  name varchar
 }
+
+Table client {
+  client_id integer [primary key]
+  username varchar
+}
+
+Table creators {
+  creator_id integer [primary key]
+  username varchar
+}
+
 
 
 Table Skills {
@@ -29,8 +41,8 @@ Table Categories {
   category_name varchar
 }
 
-TABLE UserSkills {
-    user_id integer
+TABLE creator_Skills {
+    creator_id integer
     skill_id integer
 }
 
@@ -72,26 +84,32 @@ TABLE Deadlines {
   assignment_id INT
 }
 
-Ref: "users"."user_id" < "Skills"."creator_id"
 
-Ref: "users"."user_id" < "Demos"."creator_id"
 
-Ref: "users"."user_id" < "Projects"."client_id"
+Ref: "users"."user_id" < "client"."client_id"
 
-Ref: "Projects"."project_id" < "ProjectMaterials"."project_id"
+Ref: "users"."user_id" < "creators"."creator_id"
 
-Ref: "users"."user_id" < "Assignments"."creator_id"
+Ref: "client"."client_id" < "Projects"."client_id"
 
-Ref: "Categories"."category_name" < "Skills"."skill"
-
-Ref: "users"."user_id" < "UserSkills"."user_id"
-
-Ref: "Skills"."skill_id" < "UserSkills"."skill_id"
-
-Ref: "Assignments"."assignment_id" < "Communications"."assignment_id"
-
-Ref: "Assignments"."assignment_id" < "Feedback"."feedback_id"
+Ref: "creators"."creator_id" < "Demos"."creator_id"
 
 Ref: "Projects"."project_id" < "Assignments"."project_id"
 
+Ref: "creators"."creator_id" < "Assignments"."creator_id"
+
+Ref: "Categories"."category_name" < "Skills"."skill"
+
+Ref: "creators"."creator_id" < "Skills"."creator_id"
+
+Ref: "creators"."creator_id" < "creator_Skills"."creator_id"
+
+Ref: "Skills"."skill_id" < "creator_Skills"."skill_id"
+
+Ref: "Assignments"."assignment_id" < "Communications"."assignment_id"
+
+Ref: "Assignments"."assignment_id" < "Feedback"."assignment_id"
+
 Ref: "Assignments"."assignment_id" < "Deadlines"."assignment_id"
+
+Ref: "Projects"."project_id" < "ProjectMaterials"."project_id"
