@@ -6,15 +6,14 @@
 
 Table users {
   user_id integer [primary key]
-  username varchar
+  username varchar [unique]
   role BOOLEAN 
-  name varchar
+  name varchar [not null]
 }
 
 
 Table Skills {
   skill_id integer [primary key]
-  creator_id integer 
   skill varchar
 }
 
@@ -38,9 +37,9 @@ TABLE creator_Skills {
 
 Table Projects {
   project_id integer [primary key]
-  client_id integer 
-  project_name varchar
-  project_description varchar
+  client_id integer [not null]
+  project_name varchar [not null]
+  project_description varchar [not null]
 }
 
 Table ProjectMaterials {
@@ -69,7 +68,7 @@ TABLE Communications {
   assignment_id INT
   sender_id INT
   receiver_id INT
-  message TEXT
+  message TEXT [not null]
   sent_at TIMESTAMP
   is_read BOOLEAN 
 }
@@ -87,14 +86,6 @@ Ref: "Assignments"."assignment_id" < "Communications"."assignment_id"
 
 Ref: "Categories"."category_name" < "Skills"."skill"
 
-Ref: "Skills"."skill_id" < "Demos"."skill_id"
-
-Ref: "Skills"."skill_id" < "creator_Skills"."skill_id"
-
-Ref: "users"."user_id" < "Skills"."creator_id"
-
-Ref: "users"."user_id" < "Demos"."creator_id"
-
 Ref: "users"."user_id" < "Communications"."sender_id"
 
 Ref: "users"."user_id" < "Communications"."receiver_id"
@@ -102,3 +93,9 @@ Ref: "users"."user_id" < "Communications"."receiver_id"
 Ref: "Assignments"."assignment_id" < "AssignmentMaterials"."assignment_id"
 
 Ref: "Projects"."project_id" < "Assignments"."project_id"
+
+Ref: "creator_Skills"."creator_id" < "Demos"."creator_id"
+
+Ref: "creator_Skills"."skill_id" < "Skills"."skill_id"
+
+Ref: "creator_Skills"."skill_id" < "Demos"."skill_id"
