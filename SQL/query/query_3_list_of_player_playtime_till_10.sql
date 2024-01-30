@@ -2,12 +2,19 @@
 
 SELECT
     player_name,
-    SUM(minutes_played) AS total_minutes_played,
-    DENSE_RANK() OVER (ORDER BY SUM(minutes_played) DESC) AS player_rank
-FROM
-    appearances
-GROUP BY
-    player_id, player_name
+    total_minutes_played,
+    player_rank
+FROM (
+    SELECT
+        player_name,
+        SUM(minutes_played) AS total_minutes_played,
+        DENSE_RANK() OVER (ORDER BY SUM(minutes_played) DESC) AS player_rank
+    FROM
+        appearances
+    GROUP BY
+        player_id, player_name
+) AS player_stats
+WHERE
+    player_rank <= 10
 ORDER BY
-    total_minutes_played DESC
-LIMIT 10;
+    player_rank;
