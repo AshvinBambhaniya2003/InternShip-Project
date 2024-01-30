@@ -10,6 +10,8 @@ FROM
     clubs_games t1
 JOIN
     clubs_games t2 ON t1.own_manager_name IS NOT NULL
+                      AND t1.own_manager_name <> ''
                       AND t2.opponent_manager_name IS NOT NULL
+                      AND t2.opponent_manager_name <> ''
                       AND t1.opponent_id = t2.club_id 
 where t1.own_manager_name = t2.own_manager_name;

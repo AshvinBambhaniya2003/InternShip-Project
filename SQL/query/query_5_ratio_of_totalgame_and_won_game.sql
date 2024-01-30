@@ -11,8 +11,8 @@ FROM (
     clubs.club_id,
     count(*) AS total_game_count,
     SUM(clubs_games.is_win) AS total_won_games,
-    COUNT(*)::float / NULLIF(SUM(clubs_games.is_win)::float, 0) AS ratio,
-    DENSE_RANK() OVER (ORDER BY COUNT(*)::float/ NULLIF(SUM(clubs_games.is_win)::float, 0)) AS ratio_rank
+    NULLIF(SUM(clubs_games.is_win)::float, 0) /  COUNT(*)::float AS ratio,
+    DENSE_RANK() OVER (ORDER BY NULLIF(SUM(clubs_games.is_win)::float, 0) /  COUNT(*)::float desc) AS ratio_rank
 FROM
     clubs
 JOIN
