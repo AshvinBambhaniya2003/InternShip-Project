@@ -6,11 +6,10 @@
 
 Table users {
   user_id integer [primary key]
-  username varchar [unique]
+  username varchar [unique, not null]
   role BOOLEAN 
   name varchar [not null]
 }
-
 
 Table Skills {
   skill_id integer [primary key]
@@ -27,12 +26,15 @@ Table Demos {
 
 Table Categories {
   category_id integer [primary key]
-  category_name varchar
+  category_name varchar [not null,unique]
 }
 
 TABLE creator_Skills {
-    creator_id integer
-    skill_id integer
+    creator_id integer [not null]
+    skill_id integer [not null]
+    Indexes {
+    (creator_id, skill_id) [pk]
+  }
 }
 
 Table Projects {
@@ -44,35 +46,41 @@ Table Projects {
 
 Table ProjectMaterials {
   material_id integer [primary key]
-  project_id integer 
+  project_id integer [not null]
   material_type varchar
   path varchar
 }
 
 TABLE Assignments {
   assignment_id integer [primary key]
-  project_id integer 
-  creator_id integer 
+  project_id integer [not null]
+  creator_id integer [not null]
   status BOOLEAN
   deadline date
 }
 
 Table AssignmentMaterials {
   assigment_material_id integer [primary key]
-  assignment_id integer 
+  assignment_id integer [not null]
   material_type varchar
   path varchar
 }
-TABLE Communications {
-  communication_id INT [PRIMARY KEY]
-  assignment_id INT
-  sender_id INT
-  receiver_id INT
+
+Table CommunicationMessages {
+  message_id INT [primary key]
+  communication_id INT [not null, unique]
+  sender_id INT [not null, ref: > users.user_id]
+  receiver_id INT [not null, ref: > users.user_id]
   message TEXT [not null]
   sent_at TIMESTAMP
   is_read BOOLEAN 
 }
+Table Communications {
+  communication_id INT [PRIMARY KEY]
+  assignment_id INT [NOT NULL]
+}
 
+Ref: "CommunicationMessages"."communication_id" < "Communications"."communication_id"
 
 Ref: "users"."user_id" < "creator_Skills"."creator_id"
 
@@ -80,15 +88,7 @@ Ref: "users"."user_id" < "Projects"."client_id"
 
 Ref: "Projects"."project_id" < "ProjectMaterials"."project_id"
 
-Ref: "users"."user_id" < "Assignments"."creator_id"
-
-Ref: "Assignments"."assignment_id" < "Communications"."assignment_id"
-
 Ref: "Categories"."category_name" < "Skills"."skill"
-
-Ref: "users"."user_id" < "Communications"."sender_id"
-
-Ref: "users"."user_id" < "Communications"."receiver_id"
 
 Ref: "Assignments"."assignment_id" < "AssignmentMaterials"."assignment_id"
 
@@ -96,6 +96,10 @@ Ref: "Projects"."project_id" < "Assignments"."project_id"
 
 Ref: "creator_Skills"."creator_id" < "Demos"."creator_id"
 
-Ref: "creator_Skills"."skill_id" < "Skills"."skill_id"
-
 Ref: "creator_Skills"."skill_id" < "Demos"."skill_id"
+
+Ref: "Skills"."skill_id" < "creator_Skills"."skill_id"
+
+Ref: "creator_Skills"."creator_id" < "Assignments"."creator_id"
+
+Ref: "Assignments"."assignment_id" < "Communications"."assignment_id"
