@@ -3,11 +3,12 @@ DO $$
 BEGIN 
     -- Table: users
     IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'users') THEN 
+       CREATE TYPE user_type_enum AS ENUM ('client', 'creator'); 
        CREATE TABLE users (
             user_id SERIAL PRIMARY KEY,
             username VARCHAR(255) NOT NULL,
             email VARCHAR(255) UNIQUE NOT NULL,
-            user_type ENUM('client', 'creator') NOT NULL,
+            user_type user_type_enum NOT NULL,
             first_name VARCHAR(100),
             last_name VARCHAR(100),
             birth_date DATE,
@@ -46,12 +47,13 @@ BEGIN
     
     IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'skills') THEN 
         -- Table to store skills associated with categories
+        CREATE TYPE skill_level_enum AS ENUM ('beginner', 'intermediate', 'advanced');
         CREATE TABLE skills (
             skill_id SERIAL PRIMARY KEY,
             skill_name VARCHAR(255) NOT NULL UNIQUE,
             category_id INT,
             description TEXT,
-            skill_level ENUM('beginner', 'intermediate', 'advanced'),
+            skill_level skill_level_enum NOT NULL,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (category_id) REFERENCES skill_categories(category_id)
@@ -80,10 +82,12 @@ BEGIN
     
     IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'creator_demos') THEN 
         -- Table to store demo documents of creators
+
+        CREATE TYPE document_type_enum AS ENUM ('image', 'video');
         CREATE TABLE creator_demos (
             demo_id SERIAL PRIMARY KEY,
             creator_skill_id INT NOT NULL,
-            document_type ENUM('image', 'video') NOT NULL,
+            document_type document_type_enum NOT NULL,
             document_path VARCHAR(255) NOT NULL,
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -96,13 +100,15 @@ BEGIN
 
     IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'projects') THEN 
         -- Table to store project information
+
+        CREATE TYPE project_status_enum AS ENUM ('pending', 'in_progress', 'done', 'aborted');
         CREATE TABLE projects (
             project_id SERIAL PRIMARY KEY,
             client_id INT NOT NULL,
             project_title VARCHAR(255) NOT NULL,
             deadline DATE NOT NULL,
             assigned_creator_id INT,
-            project_status ENUM('pending', 'in_progress', 'done', 'aborted') DEFAULT 'pending',
+            project_status project_status_enum DEFAULT 'pending',
             created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (client_id) REFERENCES users(user_id),
@@ -154,13 +160,15 @@ BEGIN
 
     IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'project_assignments') THEN 
         -- Table to store project assignments history
+
+        CREATE TYPE assignment_status_enum AS ENUM ('in_progress', 'completed', 'needs_revisions');
         CREATE TABLE project_assignments (
             assignment_id SERIAL PRIMARY KEY,
             project_id INT NOT NULL,
             assignment_order INT,
             old_assigned_creator_id INT,
             new_assigned_creator_id INT,
-            assignment_status ENUM('in_progress', 'completed', 'needs_revisions') DEFAULT 'in_progress',
+            assignment_status assignment_status_enum DEFAULT 'in_progress',
             assignment_timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (project_id) REFERENCES projects(project_id),
             FOREIGN KEY (old_assigned_creator_id) REFERENCES creators(creator_id),
@@ -176,11 +184,13 @@ BEGIN
 
     IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'task_submissions') THEN 
         -- Table to store task submissions by creators
+
+        CREATE TYPE submission_type_enum AS ENUM ('document', 'code', 'image', 'video');
         CREATE TABLE task_submissions (
             submission_id SERIAL PRIMARY KEY,
             creator_id INT,
             assignment_id INT,
-            submission_type ENUM('document', 'code', 'image', 'video') DEFAULT 'document',
+            submission_type submission_type_enum DEFAULT 'document',
             submission_path VARCHAR(255),
             submission_text TEXT NOT NULL,
             submission_timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
