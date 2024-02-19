@@ -2,13 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	"netflix/config"
 	"netflix/models"
 	"netflix/services"
 
 	"github.com/spf13/cobra"
 )
-
-var creditfilepath = "CSV/credits.csv"
 
 var uniqueActorsCmd = &cobra.Command{
 	Use:   "unique-actors",
@@ -19,7 +18,7 @@ var uniqueActorsCmd = &cobra.Command{
 	This command is useful for obtaining a comprehensive list of actors involved in the production of titles.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		credits, err := models.ReadCredits(creditfilepath)
+		credits, err := models.ReadCredits(config.CreditFilePath)
 		if err != nil {
 			fmt.Println("Error reading credits:", err)
 			return

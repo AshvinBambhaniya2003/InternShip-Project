@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"netflix/config"
 	"netflix/models"
 	"netflix/services"
 
@@ -11,9 +12,6 @@ import (
 var skip, limit int
 var searchQuery, selects, order, orderBy string
 
-var titlefilepath = "CSV/titles.csv"
-var creditfilepath = "CSV/credits.csv"
-
 var countCmd = &cobra.Command{
 	Use:   "title-with-personcount",
 	Short: "Displays the count of persons associated with each title.",
@@ -21,13 +19,13 @@ var countCmd = &cobra.Command{
 	Additionally, the command may include options for sorting and filtering the results based on specific criteria, providing users with flexibility in analyzing person-count data`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		titles, err := models.ReadTitles(titlefilepath)
+		titles, err := models.ReadTitles(config.TitleFilePath)
 		if err != nil {
 			fmt.Println("Error reading titles:", err)
 			return
 		}
 
-		credits, err := models.ReadCredits(creditfilepath)
+		credits, err := models.ReadCredits(config.CreditFilePath)
 		if err != nil {
 			fmt.Println("Error reading credits:", err)
 			return

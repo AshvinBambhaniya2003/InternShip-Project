@@ -6,13 +6,12 @@ import (
 	"strings"
 )
 
-
 type Credit struct {
-	PersonID  int    
-	TitleID   string 
-	Name      string 
-	Character string 
-	Role      string 
+	PersonID  int
+	TitleID   string
+	Name      string
+	Character string
+	Role      string
 }
 
 func ReadCredits(filename string) ([]Credit, error) {
@@ -38,16 +37,15 @@ func ReadCredits(filename string) ([]Credit, error) {
 			continue
 		}
 		credit := Credit{
-			PersonID: parseInt(record[0]),
-			TitleID:  record[1],
-			Name:     record[2],
+			PersonID:  parseInt(record[0]),
+			TitleID:   record[1],
+			Name:      record[2],
 			Character: strings.Trim(record[3], `"`),
-			Role:     record[4],
+			Role:      record[4],
 		}
-		
+
 		credits = append(credits, credit)
-		
-		
+
 	}
 
 	return credits, nil
