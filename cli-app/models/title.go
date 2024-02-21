@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 )
 
 type Title struct {
@@ -101,4 +102,13 @@ func parseInt(value string) int {
 
 		return int(floatValue)
 	}
+}
+
+func FindMovie(titles []Title, id string) *Title {
+	for _, title := range titles {
+		if title.ID == id && strings.EqualFold(title.Type, "MOVIE") {
+			return &title
+		}
+	}
+	return nil
 }
