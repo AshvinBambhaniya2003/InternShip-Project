@@ -112,3 +112,168 @@ func FindMovie(titles []Title, id string) *Title {
 	}
 	return nil
 }
+
+func ListMoviesCountByReleaseYear(titles []Title) map[int]int {
+	moviesCountByReleaseYear := make(map[int]int)
+	for _, record := range titles {
+		if record.Type == "MOVIE" {
+			moviesCountByReleaseYear[record.ReleaseYear]++
+		}
+	}
+
+	return moviesCountByReleaseYear
+}
+
+func ListMoviesCountByAgeCertificate(titles []Title) map[string]int {
+	moviesCountByAgeCertificate := make(map[string]int)
+	for _, record := range titles {
+		if record.Type == "MOVIE" {
+			moviesCountByAgeCertificate[record.AgeCertification]++
+		}
+	}
+
+	return moviesCountByAgeCertificate
+}
+
+func ListMovieCountByRuntime(titles []Title) map[int]int {
+
+	titlesCountByRuntimeMap := make(map[int]int)
+
+	threshold := []int{30, 45, 60, 120, 360, 1000}
+
+	for i := 0; i < len(threshold); i++ {
+		titlesCountByRuntime := GetRuntimeWiseMovieCount(titles, threshold[i])
+		titlesCountByRuntimeMap[threshold[i]] = titlesCountByRuntime
+	}
+
+	return titlesCountByRuntimeMap
+}
+
+func GetRuntimeWiseMovieCount(titles []Title, threshold int) int {
+	count := 0
+	for _, title := range titles {
+		if title.Runtime < threshold && title.Type == "MOVIE" {
+			count++
+		}
+	}
+	return count
+}
+
+func ListTitlesCountPercentageByGenres(titles []Title) (map[string]int, int) {
+
+	genreCount := make(map[string]int)
+
+	// Count the occurrences of each genre
+	totalTitles := 0
+	for _, record := range titles {
+		genres := strings.Split(record.Genres[0], ",")
+		for _, genre := range genres {
+			genre = strings.Trim(genre, "[]'\" ")
+			genreCount[genre]++
+			totalTitles++
+		}
+	}
+
+	return genreCount, totalTitles
+}
+
+func ListTitlesCountPercentageByCountry(titles []Title) (map[string]int, int) {
+
+	countryCount := make(map[string]int)
+
+	// Count the occurrences of each genre
+	totalTitles := 0
+	for _, record := range titles {
+		genres := strings.Split(record.ProductionCountries[0], ",")
+		for _, genre := range genres {
+			genre = strings.Trim(genre, "[]'\" ")
+			countryCount[genre]++
+			totalTitles++
+		}
+	}
+
+	return countryCount, totalTitles
+}
+
+func ListTitleCountBySeasons(titles []Title) map[int]int {
+
+	seasonsCounts := make(map[int]int)
+
+	for _, record := range titles {
+		if record.Seasons != 0 {
+			seasonsCounts[record.Seasons]++
+		}
+	}
+
+	return seasonsCounts
+}
+
+func ListTitlesCountByIMDbScore(titles []Title) map[[2]int]int {
+
+	titlesCountByImdbMap := make(map[[2]int]int)
+
+	threshold := [][2]int{{0, 4}, {4, 6}, {6, 8}, {8, 10}}
+
+	for i := 0; i < len(threshold); i++ {
+		titlesCountByImdb := GetImdbWiseTitleCount(titles, threshold[i][0], threshold[i][1])
+		titlesCountByImdbMap[threshold[i]] = titlesCountByImdb
+	}
+
+	return titlesCountByImdbMap
+}
+
+func GetImdbWiseTitleCount(titles []Title, minThreshold int, maxThreshold int) int {
+	count := 0
+	for _, title := range titles {
+		if title.IMDbScore >= float64(minThreshold) && title.IMDbScore < float64(maxThreshold) {
+			count++
+		}
+	}
+	return count
+}
+
+func ListTitlesCountByRuntime(titles []Title) map[int]int {
+
+	titlesCountByRuntimeMap := make(map[int]int)
+
+	threshold := []int{0, 30, 45, 60, 120, 360}
+
+	for i := 0; i < len(threshold); i++ {
+		titlesCountByRuntime := GetRuntimeWiseTitleCount(titles, threshold[i])
+		titlesCountByRuntimeMap[threshold[i]] = titlesCountByRuntime
+	}
+
+	return titlesCountByRuntimeMap
+}
+
+func GetRuntimeWiseTitleCount(titles []Title, threshold int) int {
+	count := 0
+	for _, title := range titles {
+		if title.Runtime > threshold {
+			count++
+		}
+	}
+	return count
+}
+
+func GetTitleTypeCountsAndPercentages(titles []Title) (int, float64, int, float64) {
+
+	movieCount := 0
+	showCount := 0
+
+	for _, record := range titles {
+		// Check the title type (movie or show)
+		if record.Type == "MOVIE" {
+			movieCount++
+		} else if record.Type == "SHOW" {
+			showCount++
+		}
+	}
+
+	// Calculate total count and percentages
+	totalCount := movieCount + showCount
+	moviePercentage := float64(movieCount) / float64(totalCount) * 100
+	showPercentage := float64(showCount) / float64(totalCount) * 100
+
+	return movieCount, moviePercentage, showCount, showPercentage
+}

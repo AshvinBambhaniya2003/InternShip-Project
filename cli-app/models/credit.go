@@ -50,3 +50,27 @@ func ReadCredits(filename string) ([]Credit, error) {
 
 	return credits, nil
 }
+
+func GetMostWorkingActor(credits []Credit) string {
+	actorCounts := make(map[string]int)
+
+	// Iterate through each record in the CSV file
+	for _, record := range credits {
+		actor := record.Name
+
+		// Increment the count for the current actor
+		actorCounts[actor]++
+	}
+
+	// Find the actor with the highest count
+	var mostWorkingActor string
+	maxCount := 0
+	for actor, count := range actorCounts {
+		if count > maxCount {
+			maxCount = count
+			mostWorkingActor = actor
+		}
+	}
+
+	return mostWorkingActor
+}
