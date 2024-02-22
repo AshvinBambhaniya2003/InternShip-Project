@@ -40,7 +40,7 @@ func ReadCredits(filename string) ([]Credit, error) {
 			PersonID:  parseInt(record[0]),
 			TitleID:   record[1],
 			Name:      record[2],
-			Character: strings.Trim(record[3], `"`),
+			Character: strings.ReplaceAll(record[3], `"`, ""),
 			Role:      record[4],
 		}
 

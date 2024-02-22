@@ -184,10 +184,10 @@ func ListTitlesCountPercentageByCountry(titles []Title) (map[string]int, int) {
 	// Count the occurrences of each genre
 	totalTitles := 0
 	for _, record := range titles {
-		genres := strings.Split(record.ProductionCountries[0], ",")
-		for _, genre := range genres {
-			genre = strings.Trim(genre, "[]'\" ")
-			countryCount[genre]++
+		countries := strings.Split(record.ProductionCountries[0], ",")
+		for _, country := range countries {
+			country = strings.Trim(country, "[]'\" ")
+			countryCount[country]++
 			totalTitles++
 		}
 	}
