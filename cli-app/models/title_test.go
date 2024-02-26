@@ -1,8 +1,7 @@
-package models_test
+package models
 
 import (
 	"math"
-	"netflix/models"
 	"os"
 	"reflect"
 	"testing"
@@ -28,13 +27,13 @@ func TestReadTitles(t *testing.T) {
 	file.Close()
 
 	// Test reading titles from the created CSV file
-	titles, err := models.ReadTitles(file.Name())
+	titles, err := ReadTitles(file.Name())
 	if err != nil {
 		t.Errorf("Error reading titles: %v", err)
 	}
 
 	// Expected titles
-	expected := []models.Title{
+	expected := []Title{
 		{
 			ID:                  "1",
 			Title:               "Title 1",
@@ -78,7 +77,7 @@ func TestReadTitles(t *testing.T) {
 }
 
 func TestListMoviesCountByReleaseYear(t *testing.T) {
-	titles := []models.Title{
+	titles := []Title{
 		{ID: "1", Title: "Movie 1", Type: "MOVIE", ReleaseYear: 2000},
 		{ID: "2", Title: "Movie 2", Type: "MOVIE", ReleaseYear: 2000},
 		{ID: "3", Title: "Show 1", Type: "SHOW", ReleaseYear: 2001},
@@ -92,7 +91,7 @@ func TestListMoviesCountByReleaseYear(t *testing.T) {
 		2002: 1,
 	}
 
-	result := models.ListMoviesCountByReleaseYear(titles)
+	result := ListMoviesCountByReleaseYear(titles)
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("ListMoviesCountByReleaseYear() returned unexpected result:\nExpected: %v\nActual: %v", expected, result)
@@ -100,7 +99,7 @@ func TestListMoviesCountByReleaseYear(t *testing.T) {
 }
 
 func TestListMoviesCountByAgeCertificate(t *testing.T) {
-	titles := []models.Title{
+	titles := []Title{
 		{ID: "1", Title: "Movie 1", Type: "MOVIE", AgeCertification: "PG-13"},
 		{ID: "2", Title: "Movie 2", Type: "MOVIE", AgeCertification: "R"},
 		{ID: "3", Title: "Show 1", Type: "SHOW", AgeCertification: "PG-13"},
@@ -115,7 +114,7 @@ func TestListMoviesCountByAgeCertificate(t *testing.T) {
 		"PG":    1,
 	}
 
-	result := models.ListMoviesCountByAgeCertificate(titles)
+	result := ListMoviesCountByAgeCertificate(titles)
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("ListMoviesCountByAgeCertificate() returned unexpected result:\nExpected: %v\nActual: %v", expected, result)
@@ -123,7 +122,7 @@ func TestListMoviesCountByAgeCertificate(t *testing.T) {
 }
 
 func TestListMovieCountByRuntime(t *testing.T) {
-	titles := []models.Title{
+	titles := []Title{
 		{ID: "1", Title: "Movie 1", Type: "MOVIE", Runtime: 90},
 		{ID: "2", Title: "Movie 2", Type: "MOVIE", Runtime: 120},
 		{ID: "3", Title: "Show 1", Type: "SHOW", Runtime: 45},
@@ -141,7 +140,7 @@ func TestListMovieCountByRuntime(t *testing.T) {
 		1000: 5,
 	}
 
-	result := models.ListMovieCountByRuntime(titles)
+	result := ListMovieCountByRuntime(titles)
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("ListMovieCountByRuntime() returned unexpected result:\nExpected: %v\nActual: %v", expected, result)
@@ -149,7 +148,7 @@ func TestListMovieCountByRuntime(t *testing.T) {
 }
 
 func TestListTitlesCountPercentageByGenres(t *testing.T) {
-	titles := []models.Title{
+	titles := []Title{
 		{ID: "1", Title: "Movie 1", Genres: []string{"['action', 'adventure']"}},
 		{ID: "2", Title: "Movie 2", Genres: []string{"['action', 'drama']"}},
 		{ID: "3", Title: "Movie 3", Genres: []string{"['comedy', 'drama']"}},
@@ -166,7 +165,7 @@ func TestListTitlesCountPercentageByGenres(t *testing.T) {
 		"romance":   1,
 	}
 
-	resultGenreCount, _ := models.ListTitlesCountPercentageByGenres(titles)
+	resultGenreCount, _ := ListTitlesCountPercentageByGenres(titles)
 
 	if !reflect.DeepEqual(resultGenreCount, expectedGenreCount) {
 		t.Errorf("ListTitlesCountPercentageByGenres() returned unexpected genre count:\nExpected: %v\nActual: %v", expectedGenreCount, resultGenreCount)
@@ -174,7 +173,7 @@ func TestListTitlesCountPercentageByGenres(t *testing.T) {
 }
 
 func TestListTitlesCountPercentageByCountry(t *testing.T) {
-	titles := []models.Title{
+	titles := []Title{
 		{ID: "1", Title: "Movie 1", ProductionCountries: []string{"['US', 'UK']"}},
 		{ID: "2", Title: "Movie 2", ProductionCountries: []string{"['US', 'Canada']"}},
 		{ID: "3", Title: "Movie 3", ProductionCountries: []string{"['UK']"}},
@@ -189,7 +188,7 @@ func TestListTitlesCountPercentageByCountry(t *testing.T) {
 		"Canada": 3,
 	}
 
-	resultCountryCount, _ := models.ListTitlesCountPercentageByCountry(titles)
+	resultCountryCount, _ := ListTitlesCountPercentageByCountry(titles)
 
 	if !reflect.DeepEqual(resultCountryCount, expectedCountryCount) {
 		t.Errorf("ListTitlesCountPercentageByCountry() returned unexpected country count:\nExpected: %v\nActual: %v", expectedCountryCount, resultCountryCount)
@@ -197,7 +196,7 @@ func TestListTitlesCountPercentageByCountry(t *testing.T) {
 }
 
 func TestListTitleCountBySeasons(t *testing.T) {
-	titles := []models.Title{
+	titles := []Title{
 		{ID: "1", Title: "Show 1", Seasons: 3},
 		{ID: "2", Title: "Show 2", Seasons: 2},
 		{ID: "3", Title: "Movie 1", Seasons: 0},
@@ -211,7 +210,7 @@ func TestListTitleCountBySeasons(t *testing.T) {
 		1: 1,
 	}
 
-	resultSeasonsCounts := models.ListTitleCountBySeasons(titles)
+	resultSeasonsCounts := ListTitleCountBySeasons(titles)
 
 	if !reflect.DeepEqual(resultSeasonsCounts, expectedSeasonsCounts) {
 		t.Errorf("ListTitleCountBySeasons() returned unexpected seasons counts:\nExpected: %v\nActual: %v", expectedSeasonsCounts, resultSeasonsCounts)
@@ -219,7 +218,7 @@ func TestListTitleCountBySeasons(t *testing.T) {
 }
 
 func TestListTitlesCountByIMDbScore(t *testing.T) {
-	titles := []models.Title{
+	titles := []Title{
 		{ID: "1", Title: "Movie 1", IMDbScore: 8.2},
 		{ID: "2", Title: "Movie 2", IMDbScore: 7.5},
 		{ID: "3", Title: "Movie 3", IMDbScore: 6.8},
@@ -235,7 +234,7 @@ func TestListTitlesCountByIMDbScore(t *testing.T) {
 		{8, 10}: 2,
 	}
 
-	resultTitlesCountByImdbMap := models.ListTitlesCountByIMDbScore(titles)
+	resultTitlesCountByImdbMap := ListTitlesCountByIMDbScore(titles)
 
 	if !reflect.DeepEqual(resultTitlesCountByImdbMap, expectedTitlesCountByImdbMap) {
 		t.Errorf("ListTitlesCountByIMDbScore() returned unexpected titles count by IMDb score:\nExpected: %v\nActual: %v", expectedTitlesCountByImdbMap, resultTitlesCountByImdbMap)
@@ -243,7 +242,7 @@ func TestListTitlesCountByIMDbScore(t *testing.T) {
 }
 
 func TestListTitlesCountByRuntime(t *testing.T) {
-	titles := []models.Title{
+	titles := []Title{
 		{ID: "1", Title: "Movie 1", Runtime: 90},
 		{ID: "2", Title: "Movie 2", Runtime: 120},
 		{ID: "3", Title: "Movie 3", Runtime: 75},
@@ -261,7 +260,7 @@ func TestListTitlesCountByRuntime(t *testing.T) {
 		360: 0,
 	}
 
-	resultTitlesCountByRuntimeMap := models.ListTitlesCountByRuntime(titles)
+	resultTitlesCountByRuntimeMap := ListTitlesCountByRuntime(titles)
 
 	if !reflect.DeepEqual(resultTitlesCountByRuntimeMap, expectedTitlesCountByRuntimeMap) {
 		t.Errorf("ListTitlesCountByRuntime() returned unexpected titles count by runtime:\nExpected: %v\nActual: %v", expectedTitlesCountByRuntimeMap, resultTitlesCountByRuntimeMap)
@@ -269,7 +268,7 @@ func TestListTitlesCountByRuntime(t *testing.T) {
 }
 
 func TestGetTitleTypeCountsAndPercentages(t *testing.T) {
-	titles := []models.Title{
+	titles := []Title{
 		{ID: "1", Type: "MOVIE"},
 		{ID: "2", Type: "MOVIE"},
 		{ID: "3", Type: "SHOW"},
@@ -282,7 +281,7 @@ func TestGetTitleTypeCountsAndPercentages(t *testing.T) {
 	expectedShowCount := 2
 	expectedShowPercentage := float64(40)
 
-	resultMovieCount, resultMoviePercentage, resultShowCount, resultShowPercentage := models.GetTitleTypeCountsAndPercentages(titles)
+	resultMovieCount, resultMoviePercentage, resultShowCount, resultShowPercentage := GetTitleTypeCountsAndPercentages(titles)
 
 	// Check movie count
 	if resultMovieCount != expectedMovieCount {
