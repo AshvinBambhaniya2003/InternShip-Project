@@ -2,8 +2,10 @@ package models
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/rs/xid"
 )
 
 // TitleTable represent table name
@@ -49,6 +51,39 @@ func (model *TitleModel) List() ([]Title, error) {
 		return nil, err
 	}
 	return titles, nil
+}
+
+func (model *TitleModel) Insert(title Title) (Title, error) {
+	title.ID = xid.New().String()
+
+	time := time.Now().Format("2006-01-02T15:04:05.999999Z")
+
+	_, err := model.db.Insert(TitleTable).Rows(
+		Title{
+			ID:                title.ID,
+			Title:             title.Title,
+			Type:              title.Type,
+			Description:       title.Description,
+			ReleaseYear:       title.ReleaseYear,
+			AgeCertification:  title.AgeCertification,
+			Runtime:           title.Runtime,
+			Genres:            title.Genres,
+			ProductionCountry: title.ProductionCountry,
+			Seasons:           title.Seasons,
+			IMDBID:            title.IMDBID,
+			IMDBScore:         title.IMDBScore,
+			IMDBVotes:         title.IMDBVotes,
+			TMDBPopularity:    title.TMDBPopularity,
+			TMDBScore:         title.TMDBScore,
+			CreatedAt:         time,
+			UpdatedAt:         time,
+		},
+	).Executor().Exec()
+
+	if err != nil {
+		return title, err
+	}
+	return title, err
 }
 
 // GetById get title by id

@@ -1,15 +1,18 @@
 package v1
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
+	"gopkg.in/go-playground/validator.v9"
 
 	"github.com/Improwised/golang-api/constants"
 	"github.com/Improwised/golang-api/models"
 	"github.com/Improwised/golang-api/pkg/events"
+	"github.com/Improwised/golang-api/pkg/structs"
 	"github.com/Improwised/golang-api/pkg/watermill"
 	"github.com/Improwised/golang-api/utils"
 )
@@ -65,9 +68,49 @@ func (ctrl *TitleController) Delete(c *fiber.Ctx) error {
 		return utils.JSONError(c, http.StatusInternalServerError, "no any title associate with given id")
 	}
 
-	err = ctrl.titleModel.DeleteTitle(titleID)
+	err = ctrl.titleModel.Delete(titleID)
 	if err != nil {
 		return utils.JSONError(c, http.StatusInternalServerError, "Error while Delete title")
 	}
 	return utils.JSONSuccess(c, http.StatusOK, title)
+}
+
+func (ctrl *TitleController) Create(c *fiber.Ctx) error {
+
+	var titleReq structs.ReqRegisterTitle
+
+	err := json.Unmarshal(c.Body(), &titleReq)
+	if err != nil {
+		return utils.JSONFail(c, http.StatusBadRequest, err.Error())
+	}
+
+	validate := validator.New()
+	err = validate.Struct(titleReq)
+	if err != nil {
+		return utils.JSONFail(c, http.StatusBadRequest, utils.ValidatorErrorString(err))
+	}
+
+	title, err := ctrl.titleModel.Insert(models.Title{
+		Title:             titleReq.Title,
+		Type:              titleReq.Type,
+		Description:       titleReq.Description,
+		ReleaseYear:       titleReq.ReleaseYear,
+		AgeCertification:  titleReq.AgeCertification,
+		Runtime:           titleReq.Runtime,
+		Genres:            titleReq.Genres,
+		ProductionCountry: titleReq.ProductionCountry,
+		Seasons:           titleReq.Seasons,
+		IMDBID:            titleReq.IMDBID,
+		IMDBScore:         titleReq.IMDBScore,
+		IMDBVotes:         titleReq.IMDBVotes,
+		TMDBPopularity:    titleReq.TMDBPopularity,
+		TMDBScore:         titleReq.TMDBScore,
+	})
+
+	if err != nil {
+		ctrl.logger.Error("error while insert title", zap.Error(err))
+		return utils.JSONError(c, http.StatusInternalServerError, "error while creating title, please try after sometime")
+	}
+
+	return utils.JSONSuccess(c, http.StatusCreated, title)
 }
