@@ -66,3 +66,9 @@ func (model *TitleModel) GetById(id string) (Title, error) {
 
 	return title, err
 }
+
+// DeleteTitle deletes a title by its ID
+func (model *TitleModel) Delete(id string) error {
+	_, err := model.db.Delete(TitleTable).Where(goqu.Ex{"id": id}).Executor().Exec()
+	return err
+}

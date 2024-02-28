@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 
+	"github.com/Improwised/golang-api/constants"
 	"github.com/Improwised/golang-api/models"
 	"github.com/Improwised/golang-api/pkg/events"
 	"github.com/Improwised/golang-api/pkg/watermill"
@@ -45,12 +46,28 @@ func (ctrl *TitleController) List(c *fiber.Ctx) error {
 
 func (ctrl *TitleController) GetById(c *fiber.Ctx) error {
 
-	titleID := c.Params("titleId")
+	titleID := c.Params(constants.ParamTitleId)
 
 	title, err := ctrl.titleModel.GetById(titleID)
 	if err != nil {
 		return utils.JSONError(c, http.StatusInternalServerError, "no any title associate with given id")
 	}
 
+	return utils.JSONSuccess(c, http.StatusOK, title)
+}
+
+func (ctrl *TitleController) Delete(c *fiber.Ctx) error {
+
+	titleID := c.Params(constants.ParamTitleId)
+
+	title, err := ctrl.titleModel.GetById(titleID)
+	if err != nil {
+		return utils.JSONError(c, http.StatusInternalServerError, "no any title associate with given id")
+	}
+
+	err = ctrl.titleModel.DeleteTitle(titleID)
+	if err != nil {
+		return utils.JSONError(c, http.StatusInternalServerError, "Error while Delete title")
+	}
 	return utils.JSONSuccess(c, http.StatusOK, title)
 }
