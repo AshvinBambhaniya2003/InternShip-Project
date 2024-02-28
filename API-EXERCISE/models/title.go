@@ -1,6 +1,8 @@
 package models
 
 import (
+	"database/sql"
+
 	"github.com/doug-martin/goqu/v9"
 )
 
@@ -47,4 +49,20 @@ func (model *TitleModel) List() ([]Title, error) {
 		return nil, err
 	}
 	return titles, nil
+}
+
+// GetById get title by id
+func (model *TitleModel) GetById(id string) (Title, error) {
+	title := Title{}
+	found, err := model.db.From(TitleTable).Where(goqu.Ex{"id": id}).ScanStruct(&title)
+
+	if err != nil {
+		return title, err
+	}
+
+	if !found {
+		return title, sql.ErrNoRows
+	}
+
+	return title, err
 }

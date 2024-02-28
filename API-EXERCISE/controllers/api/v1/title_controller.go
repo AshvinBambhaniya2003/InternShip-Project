@@ -42,3 +42,15 @@ func (ctrl *TitleController) List(c *fiber.Ctx) error {
 	}
 	return utils.JSONSuccess(c, http.StatusOK, titles)
 }
+
+func (ctrl *TitleController) GetById(c *fiber.Ctx) error {
+
+	titleID := c.Params("titleId")
+
+	title, err := ctrl.titleModel.GetById(titleID)
+	if err != nil {
+		return utils.JSONError(c, http.StatusInternalServerError, "no any title associate with given id")
+	}
+
+	return utils.JSONSuccess(c, http.StatusOK, title)
+}

@@ -121,5 +121,6 @@ func setupTitleController(v1 fiber.Router, goqu *goqu.Database, logger *zap.Logg
 
 	titleRouter := v1.Group("/titles")
 	titleRouter.Get("/", titleController.List)
+	titleRouter.Get("/:titleId", titleController.GetById)
 	return nil
 }
