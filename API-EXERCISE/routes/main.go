@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/doug-martin/goqu/v9"
+	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 
 	"github.com/Improwised/golang-api/config"
@@ -13,8 +15,6 @@ import (
 	"github.com/Improwised/golang-api/pkg/events"
 	pMetrics "github.com/Improwised/golang-api/pkg/prometheus"
 	"github.com/Improwised/golang-api/pkg/watermill"
-	"github.com/doug-martin/goqu/v9"
-	"github.com/gofiber/fiber/v2"
 )
 
 var mu sync.Mutex
@@ -42,6 +42,11 @@ func Setup(app *fiber.App, goqu *goqu.Database, logger *zap.Logger, config confi
 	}
 
 	err = setupUserController(v1, goqu, logger, middlewares, events, pub)
+	if err != nil {
+		return err
+	}
+
+	err = setupTitleController(v1, goqu, logger, middlewares, events, pub)
 	if err != nil {
 		return err
 	}
@@ -105,5 +110,16 @@ func metricsController(app *fiber.App, db *goqu.Database, logger *zap.Logger, pM
 	}
 
 	app.Get("/metrics", metricsController.Metrics)
+	return nil
+}
+
+func setupTitleController(v1 fiber.Router, goqu *goqu.Database, logger *zap.Logger, middlewares middlewares.Middleware, events *events.Events, pub *watermill.WatermillPublisher) error {
+	titleController, err := controller.NewTitleController(goqu, logger, events, pub)
+	if err != nil {
+		return err
+	}
+
+	titleRouter := v1.Group("/titles")
+	titleRouter.Get("/", titleController.List)
 	return nil
 }

@@ -15,7 +15,7 @@ require (
 	github.com/ThreeDotsLabs/watermill-kafka/v2 v2.5.0
 	github.com/ThreeDotsLabs/watermill-redisstream v1.2.2
 	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
-	github.com/doug-martin/goqu/v9 v9.18.0
+	github.com/doug-martin/goqu/v9 v9.19.0
 	github.com/getsentry/sentry-go v0.25.0
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/go-sql-driver/mysql v1.7.1
