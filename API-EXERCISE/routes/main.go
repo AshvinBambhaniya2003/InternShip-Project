@@ -148,5 +148,6 @@ func setupCreditController(v1 fiber.Router, goqu *goqu.Database, logger *zap.Log
 	creditRouter.Post("/", middlewares.TitleExist, creditController.Create)
 	creditRouter.Get("/", middlewares.TitleExist, creditController.ListByTitleId)
 	creditRouter.Get(fmt.Sprintf("/:%s", constants.ParamCreditId), middlewares.CreditTitleVerification, creditController.GetById)
+	creditRouter.Delete(fmt.Sprintf("/:%s", constants.ParamCreditId), middlewares.CreditTitleVerification, creditController.Delete)
 	return nil
 }

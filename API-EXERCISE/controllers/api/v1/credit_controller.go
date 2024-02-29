@@ -100,8 +100,20 @@ func (ctrl *CreditController) GetById(c *fiber.Ctx) error {
 		if err == sql.ErrNoRows {
 			return utils.JSONFail(c, http.StatusNotFound, "Credit Does not exist")
 		}
-		return utils.JSONError(c, http.StatusInternalServerError, "no any title associate with given id")
+		return utils.JSONError(c, http.StatusInternalServerError, "Error while Get Credit")
 	}
 
 	return utils.JSONSuccess(c, http.StatusOK, credit)
+}
+
+func (ctrl *CreditController) Delete(c *fiber.Ctx) error {
+
+	id := c.Params(constants.ParamCreditId)
+
+	err := ctrl.creditModel.Delete(id)
+	if err != nil {
+		return utils.JSONError(c, http.StatusInternalServerError, "Error while Delete title")
+	}
+
+	return utils.JSONSuccess(c, http.StatusOK, "Suceesfully Deleted")
 }

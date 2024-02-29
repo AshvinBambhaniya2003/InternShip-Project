@@ -78,3 +78,8 @@ func (model *CreditModel) GetById(id string) (Credit, error) {
 
 	return credit, err
 }
+
+func (model *CreditModel) Delete(id string) error {
+	_, err := model.db.Delete(CreditTable).Where(goqu.Ex{"id": id}).Executor().Exec()
+	return err
+}
