@@ -34,9 +34,14 @@ func Setup(app *fiber.App, goqu *goqu.Database, logger *zap.Logger, config confi
 	router := app.Group("/api")
 	v1 := router.Group("/v1")
 
+	titleCreditCheckMiddlewares, err := middlewares.NewTitleCreditCheckMiddleware(goqu)
+	if err != nil {
+		return err
+	}
+
 	middlewares := middlewares.NewMiddleware(config, logger)
 
-	err := setupAuthController(v1, goqu, logger, middlewares, config)
+	err = setupAuthController(v1, goqu, logger, middlewares, config)
 	if err != nil {
 		return err
 	}
@@ -47,6 +52,11 @@ func Setup(app *fiber.App, goqu *goqu.Database, logger *zap.Logger, config confi
 	}
 
 	err = setupTitleController(v1, goqu, logger, middlewares, events, pub)
+	if err != nil {
+		return err
+	}
+
+	err = setupCreditController(v1, goqu, logger, titleCreditCheckMiddlewares, events, pub)
 	if err != nil {
 		return err
 	}
@@ -125,5 +135,16 @@ func setupTitleController(v1 fiber.Router, goqu *goqu.Database, logger *zap.Logg
 	titleRouter.Get(fmt.Sprintf("/:%s", constants.ParamTitleId), titleController.GetById)
 	titleRouter.Delete(fmt.Sprintf("/:%s", constants.ParamTitleId), titleController.Delete)
 	titleRouter.Put(fmt.Sprintf("/:%s", constants.ParamTitleId), titleController.Update)
+	return nil
+}
+
+func setupCreditController(v1 fiber.Router, goqu *goqu.Database, logger *zap.Logger, middlewares *middlewares.TitleCreditCheckMiddleware, events *events.Events, pub *watermill.WatermillPublisher) error {
+	creditController, err := controller.NewCreditController(goqu, logger, events, pub)
+	if err != nil {
+		return err
+	}
+
+	creditRouter := v1.Group(fmt.Sprintf("/titles/:%s/credits", constants.ParamTitleId))
+	creditRouter.Post("/", middlewares.TitleExist, creditController.Create)
 	return nil
 }

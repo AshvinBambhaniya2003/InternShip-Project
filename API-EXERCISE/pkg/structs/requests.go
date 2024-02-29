@@ -32,3 +32,10 @@ type ReqRegisterTitle struct {
 	TMDBPopularity    float64 `json:"tmdb_popularity" validate:"required"`
 	TMDBScore         float64 `json:"tmdb_score" validate:"required"`
 }
+
+type ReqRegisterCredit struct {
+	PersonID  int    `json:"person_id" db:"person_id" validate:"required"`
+	Name      string `json:"name" validate:"required"`
+	Character string `json:"character" db:"character"`
+	Role      string `json:"role" db:"role" validate:"required"`
+}

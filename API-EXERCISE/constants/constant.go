@@ -19,8 +19,9 @@ const (
 
 // params
 const (
-	ParamUid     = "userId"
-	ParamTitleId = "titleId"
+	ParamUid      = "userId"
+	ParamTitleId  = "titleId"
+	ParamCreditId = "creditId"
 )
 
 // Success messages
