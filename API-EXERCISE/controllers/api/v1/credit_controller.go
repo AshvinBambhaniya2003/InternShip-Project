@@ -78,3 +78,14 @@ func (ctrl *CreditController) Create(c *fiber.Ctx) error {
 
 	return utils.JSONSuccess(c, http.StatusCreated, creditReq)
 }
+
+func (ctrl *CreditController) ListByTitleId(c *fiber.Ctx) error {
+
+	titleId := c.Params(constants.ParamTitleId)
+
+	credits, err := ctrl.creditModel.ListCredits(titleId)
+	if err != nil {
+		return utils.JSONError(c, http.StatusInternalServerError, "Error while get credit list")
+	}
+	return utils.JSONSuccess(c, http.StatusOK, credits)
+}

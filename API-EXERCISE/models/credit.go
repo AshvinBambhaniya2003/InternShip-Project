@@ -55,3 +55,10 @@ func (model *CreditModel) Insert(credit Credit) error {
 
 	return err
 }
+
+func (model *CreditModel) ListCredits(id string) ([]Credit, error) {
+	var credits []Credit
+	err := model.db.From(CreditTable).Where(goqu.Ex{"title_id": id}).ScanStructs(&credits)
+
+	return credits, err
+}
