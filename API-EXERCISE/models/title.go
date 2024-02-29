@@ -107,3 +107,8 @@ func (model *TitleModel) Delete(id string) error {
 	_, err := model.db.Delete(TitleTable).Where(goqu.Ex{"id": id}).Executor().Exec()
 	return err
 }
+
+func (model *TitleModel) Update(id string, title Title) error {
+	_, err := model.db.Update(TitleTable).Set(title).Where(goqu.Ex{"id": id}).Executor().Exec()
+	return err
+}
