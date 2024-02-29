@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -88,4 +89,19 @@ func (ctrl *CreditController) ListByTitleId(c *fiber.Ctx) error {
 		return utils.JSONError(c, http.StatusInternalServerError, "Error while get credit list")
 	}
 	return utils.JSONSuccess(c, http.StatusOK, credits)
+}
+
+func (ctrl *CreditController) GetById(c *fiber.Ctx) error {
+
+	id := c.Params(constants.ParamCreditId)
+
+	credit, err := ctrl.creditModel.GetById(id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return utils.JSONFail(c, http.StatusNotFound, "Credit Does not exist")
+		}
+		return utils.JSONError(c, http.StatusInternalServerError, "no any title associate with given id")
+	}
+
+	return utils.JSONSuccess(c, http.StatusOK, credit)
 }

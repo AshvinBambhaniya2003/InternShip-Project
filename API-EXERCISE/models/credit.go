@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
@@ -61,4 +62,19 @@ func (model *CreditModel) ListCredits(id string) ([]Credit, error) {
 	err := model.db.From(CreditTable).Where(goqu.Ex{"title_id": id}).ScanStructs(&credits)
 
 	return credits, err
+}
+
+func (model *CreditModel) GetById(id string) (Credit, error) {
+	credit := Credit{}
+	found, err := model.db.From(CreditTable).Where(goqu.Ex{"id": id}).ScanStruct(&credit)
+
+	if err != nil {
+		return credit, err
+	}
+
+	if !found {
+		return credit, sql.ErrNoRows
+	}
+
+	return credit, err
 }
