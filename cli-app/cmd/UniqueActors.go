@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"netflix/config"
 	"netflix/models"
 	"netflix/services"
@@ -26,13 +27,22 @@ var uniqueActorsCmd = &cobra.Command{
 
 		actors := services.ListUniqueActors(credits)
 
+		paginateActor, err := services.Paginate(actors, skip, limit, orderBy, order)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
 		fmt.Println("List of Unique Actors:")
-		for _, actor := range actors {
-			fmt.Println(actor)
+		for _, actor := range paginateActor {
+			fmt.Println(actor.Name)
 		}
 	},
 }
 
 func init() {
 	titleCmd.AddCommand(uniqueActorsCmd)
+	uniqueActorsCmd.Flags().IntVar(&skip, "skip", 0, "Skip the first N records")
+	uniqueActorsCmd.Flags().IntVar(&limit, "limit", -1, "Limit the number of records to M")
+	uniqueActorsCmd.Flags().StringVar(&order, "order", "", "Order records by ASC | DSC")
+	uniqueActorsCmd.Flags().StringVar(&orderBy, "order-by", "", "Define the column on which order is applied")
 }

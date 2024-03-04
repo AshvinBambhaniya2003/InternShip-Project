@@ -30,16 +30,33 @@ var TitlesWithCreditsCmd = &cobra.Command{
 
 		titleWithCredits := services.ListTitlesWithCredits(titles, credits)
 
-		for _, titleWithCredit := range titleWithCredits {
-			fmt.Printf("Title: %s\n", titleWithCredit.Title)
-			fmt.Printf("Type: %s\n", titleWithCredit.Type)
-			fmt.Printf("Description: %s\n", titleWithCredit.Description)
-			// Add more fields as needed
-			fmt.Println("Credits:")
-			for _, credit := range titleWithCredit.Credits {
-				fmt.Printf("- %s as %s\n", credit.Name, credit.Character)
+		titleWithCredits, err = services.Paginate(titleWithCredits, skip, limit, orderBy, order)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		if selects == "" {
+			for _, titleWithCredit := range titleWithCredits {
+				fmt.Printf("Title: %s\n", titleWithCredit.Title.Title)
+				fmt.Printf("Type: %s\n", titleWithCredit.Type)
+				fmt.Printf("Description: %s\n", titleWithCredit.Description)
+				// Add more fields as needed
+				fmt.Println("Credits:")
+				for _, credit := range titleWithCredit.Credits {
+					fmt.Printf("- %s as %s\n", credit.Name, credit.Character)
+				}
+				fmt.Println("------------------------------------")
 			}
-			fmt.Println("------------------------------------")
+			return
+		}
+
+		result := services.SelectColumn(titleWithCredits, selects)
+		for _, record := range result {
+			for key, value := range record {
+				fmt.Printf("%s:%s ", key, value)
+			}
+			fmt.Println("\n")
 		}
 
 	},
@@ -47,4 +64,9 @@ var TitlesWithCreditsCmd = &cobra.Command{
 
 func init() {
 	titleCmd.AddCommand(TitlesWithCreditsCmd)
+	TitlesWithCreditsCmd.Flags().IntVar(&skip, "skip", 0, "Skip the first N records")
+	TitlesWithCreditsCmd.Flags().IntVar(&limit, "limit", -1, "Limit the number of records to M")
+	TitlesWithCreditsCmd.Flags().StringVar(&selects, "selects", "", "Print only specified columns")
+	TitlesWithCreditsCmd.Flags().StringVar(&order, "order", "", "Order records by ASC | DSC")
+	TitlesWithCreditsCmd.Flags().StringVar(&orderBy, "order-by", "", "Define the column on which order is applied")
 }

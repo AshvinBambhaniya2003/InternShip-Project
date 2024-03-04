@@ -33,8 +33,25 @@ var countCmd = &cobra.Command{
 
 		titleWithPersonCount := services.ListTitleWithPersonCount(titles, credits, searchQuery)
 
-		for _, titleCount := range titleWithPersonCount {
-			fmt.Printf("%s,%d\n", titleCount.Title, titleCount.Count)
+		paginatedTitleWithPersonCount, err := services.Paginate(titleWithPersonCount, skip, limit, orderBy, order)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		if selects == "" {
+			for _, titleCount := range paginatedTitleWithPersonCount {
+				fmt.Printf("Title:%s Count:%d\n", titleCount.Title, titleCount.Count)
+			}
+			return
+		}
+
+		result := services.SelectColumn(paginatedTitleWithPersonCount, selects)
+		for _, record := range result {
+			for key, value := range record {
+				fmt.Printf("%s:%s ", key, value)
+			}
+			fmt.Println("")
 		}
 	},
 }

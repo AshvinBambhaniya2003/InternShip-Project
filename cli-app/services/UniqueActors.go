@@ -4,7 +4,11 @@ import (
 	"netflix/models"
 )
 
-func ListUniqueActors(credits []models.Credit) []string {
+type Actor struct {
+	Name string
+}
+
+func ListUniqueActors(credits []models.Credit) []Actor {
 
 	uniqueActors := make(map[string]bool)
 
@@ -15,12 +19,11 @@ func ListUniqueActors(credits []models.Credit) []string {
 		}
 	}
 
-	// Extract unique actors from the map
-	var actors []string
+	var actorList []Actor
 	for actor := range uniqueActors {
-		actors = append(actors, actor)
+		actorList = append(actorList, Actor{Name: actor})
 	}
 
-	return actors
+	return actorList
 
 }

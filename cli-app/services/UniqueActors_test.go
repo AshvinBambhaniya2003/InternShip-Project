@@ -2,28 +2,40 @@ package services
 
 import (
 	"netflix/models"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestListUniqueActors(t *testing.T) {
-	// Sample credits
+	// Mock credits data
 	credits := []models.Credit{
-		{PersonID: 1, TitleID: "1", Name: "Actor 1", Role: "ACTOR"},
-		{PersonID: 2, TitleID: "1", Name: "Actor 2", Role: "ACTOR"},
-		{PersonID: 3, TitleID: "1", Name: "Actor 3", Role: "DIRECTOR"},
-		{PersonID: 4, TitleID: "1", Name: "Actor 1", Role: "ACTOR"},
-		{PersonID: 5, TitleID: "1", Name: "Actor 4", Role: "ACTOR"},
+		{PersonID: 1, TitleID: "1", Name: "John Doe", Character: "Character 1", Role: "ACTOR"},
+		{PersonID: 1, TitleID: "2", Name: "John Doe", Character: "Character 2", Role: "ACTOR"},
+		{PersonID: 3, TitleID: "3", Name: "Jane Smith", Character: "Character 3", Role: "ACTOR"},
+		{PersonID: 4, TitleID: "4", Name: "Jane Smith", Character: "Character 4", Role: "DIRECTOR"},
 	}
 
-	// Expected unique actors
-	expected := []string{"Actor 1", "Actor 2", "Actor 4"}
+	// Test case 1: Actors exist in credits
+	uniqueActors := ListUniqueActors(credits)
+	assert.Equal(t, []Actor{
+		{Name: "John Doe"},
+		{Name: "Jane Smith"},
+	}, uniqueActors)
 
-	// Call ListUniqueActors function
-	result := ListUniqueActors(credits)
+	// Test case 2: No actors in credits
+	emptyCredits := []models.Credit{}
+	uniqueActors = ListUniqueActors(emptyCredits)
+	assert.Empty(t, uniqueActors)
 
-	// Check if the result matches the expected output
-	if !reflect.DeepEqual(result, expected) {
-		t.Errorf("ListUniqueActors() returned unexpected result:\nExpected: %v\nActual: %v", expected, result)
+	// Test case 3: Actors with different roles
+	creditsWithDifferentRoles := []models.Credit{
+		{PersonID: 1, TitleID: "1", Name: "John Doe", Character: "Character 1", Role: "ACTOR"},
+		{PersonID: 2, TitleID: "2", Name: "John Doe", Character: "Character 2", Role: "DIRECTOR"},
+		{PersonID: 3, TitleID: "3", Name: "Jane Smith", Character: "Character 3", Role: "PRODUCER"},
 	}
+	uniqueActors = ListUniqueActors(creditsWithDifferentRoles)
+	assert.Equal(t, []Actor{
+		{Name: "John Doe"},
+	}, uniqueActors)
 }

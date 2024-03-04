@@ -31,15 +31,31 @@ var MoviesForActorCmd = &cobra.Command{
 			return
 		}
 
-		if len(args) > 0 {
-			actorMap := services.ListMoviesForActor(titles, credits, args[0])
-			fmt.Printf("Movies for actor %s:\n", args[0])
-			for title, character := range actorMap {
-				fmt.Printf("- %s as %s\n", title, character)
-			}
-
-		} else {
+		if len(args) != 1 {
 			log.Fatal("Only one argument allow")
+		}
+
+		actorMovies := services.ListMoviesForActor(titles, credits, args[0])
+		fmt.Printf("Movies for actor %s:\n", args[0])
+
+		actorMovies, err = services.Paginate(actorMovies, skip, limit, orderBy, order)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		if selects == "" {
+			for _, value := range actorMovies {
+				fmt.Printf("TitleName:%s CharacterName:%s\n", value.Title, value.CharacterName)
+			}
+			return
+		}
+
+		result := services.SelectColumn(actorMovies, selects)
+		for _, record := range result {
+			for key, value := range record {
+				fmt.Printf("%s:%s ", key, value)
+			}
+			fmt.Println("")
 		}
 
 	},
@@ -47,4 +63,9 @@ var MoviesForActorCmd = &cobra.Command{
 
 func init() {
 	titleCmd.AddCommand(MoviesForActorCmd)
+	MoviesForActorCmd.Flags().IntVar(&skip, "skip", 0, "Skip the first N records")
+	MoviesForActorCmd.Flags().IntVar(&limit, "limit", -1, "Limit the number of records to M")
+	MoviesForActorCmd.Flags().StringVar(&selects, "selects", "", "Print only specified columns")
+	MoviesForActorCmd.Flags().StringVar(&order, "order", "", "Order records by ASC | DSC")
+	MoviesForActorCmd.Flags().StringVar(&orderBy, "order-by", "", "Define the column on which order is applied")
 }
