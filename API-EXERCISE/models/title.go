@@ -115,6 +115,9 @@ func (model *TitleModel) Insert(title Title) (Title, error) {
 	if err != nil {
 		return title, err
 	}
+
+	title, err = model.GetById(title.ID)
+
 	return title, err
 }
 
