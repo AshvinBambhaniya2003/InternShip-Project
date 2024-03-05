@@ -2,10 +2,13 @@ package models
 
 import (
 	"database/sql"
+	"strings"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/rs/xid"
+
+	"github.com/Improwised/golang-api/constants"
 )
 
 // TitleTable represent table name
@@ -45,12 +48,41 @@ func InitTitleModel(goqu *goqu.Database) (*TitleModel, error) {
 	}, nil
 }
 
-func (model *TitleModel) List() ([]Title, error) {
+func (model *TitleModel) List(queries map[string]string, page int) ([]Title, error) {
 	var titles []Title
-	if err := model.db.From(TitleTable).ScanStructs(&titles); err != nil {
-		return nil, err
+
+	query := model.db.From(TitleTable)
+
+	for key, value := range queries {
+		if key == constants.TitleName {
+			query = query.Where(goqu.Func("LOWER", goqu.I("title")).Like("%" + strings.ToLower(value) + "%"))
+		}
+
+		if key == constants.TitleType {
+			query = query.Where(goqu.Ex{"type": value})
+		}
 	}
-	return titles, nil
+
+	//add offset
+	offset := (page - 1) * constants.PageSize
+	if offset >= 0 {
+		query = query.Offset(uint(offset))
+	}
+
+	//add limit
+	query = query.Limit(uint(constants.PageSize))
+
+	sql, args, err := query.ToSQL()
+	if err != nil {
+		return titles, err
+	}
+
+	err = model.db.ScanStructs(&titles, sql, args...)
+	if err != nil {
+		return titles, err
+	}
+
+	return titles, err
 }
 
 func (model *TitleModel) Insert(title Title) (Title, error) {

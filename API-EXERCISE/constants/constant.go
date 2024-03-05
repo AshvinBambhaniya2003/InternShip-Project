@@ -22,6 +22,14 @@ const (
 	ParamUid      = "userId"
 	ParamTitleId  = "titleId"
 	ParamCreditId = "creditId"
+	Page          = "page"
+	PageSize      = 10
+)
+
+// Queries
+const (
+	TitleName = "title_name"
+	TitleType = "title_type"
 )
 
 // Success messages

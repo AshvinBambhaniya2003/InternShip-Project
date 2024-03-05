@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
@@ -42,10 +43,29 @@ func NewTitleController(goqu *goqu.Database, logger *zap.Logger, event *events.E
 }
 
 func (ctrl *TitleController) List(c *fiber.Ctx) error {
-	titles, err := ctrl.titleModel.List()
-	if err != nil {
-		return utils.JSONError(c, http.StatusInternalServerError, "Error while get title list")
+
+	queries := c.Queries()
+	pageStr := c.Query(constants.Page)
+
+	var pageInt int
+	var err error
+	if pageStr != "" {
+		pageInt, err = strconv.Atoi(pageStr)
+		if pageInt <= 0 {
+			pageInt = 1
+		}
+
+		if err != nil {
+			return utils.JSONError(c, http.StatusBadRequest, "please enter page in int")
+		}
 	}
+
+	titles, err := ctrl.titleModel.List(queries, pageInt)
+	if err != nil {
+		ctrl.logger.Error("error while getting titles", zap.Error(err))
+		return utils.JSONError(c, http.StatusInternalServerError, "error while getting titles")
+	}
+
 	return utils.JSONSuccess(c, http.StatusOK, titles)
 }
 
