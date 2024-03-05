@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 	"fmt"
-	"log"
 	"reflect"
 	"sort"
 	"strings"
@@ -12,8 +11,13 @@ import (
 func Paginate[T any](records []T, skip, limit int, orderBy string, order string) ([]T, error) {
 
 	if len(records) == 0 {
-		log.Fatal("no any records for given field")
+		return records, nil
 	}
+
+	if skip > len(records) {
+		return nil, nil
+	}
+
 	if skip < 0 {
 		skip = 0
 	}
@@ -38,10 +42,6 @@ func Paginate[T any](records []T, skip, limit int, orderBy string, order string)
 	}
 
 	end := len(records)
-
-	if skip < 0 || end < 0 || skip >= len(records) || end > len(records) {
-		return nil, errors.New("invalid pagination indices")
-	}
 
 	if limit != -1 && skip+limit < end {
 		end = skip + limit
