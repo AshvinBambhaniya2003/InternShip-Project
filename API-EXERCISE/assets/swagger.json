@@ -6,14 +6,14 @@
     "application/json"
   ],
   "schemes": [
-    "https"
+    "http"
   ],
   "swagger": "2.0",
   "info": {
     "title": "Golang API.",
     "version": "0.0.1-alpha"
   },
-  "host": "localhost",
+  "host": "localhost:3000",
   "basePath": "/api/v1",
   "paths": {
     "/healthz": {
@@ -143,6 +143,489 @@
         ],
         "summary": "Prometheus metrics endpoint",
         "operationId": "ReqMetrics"
+      }
+    },
+    "/titles": {
+      "get": {
+        "description": "List Titles",
+        "consumes": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Titles"
+        ],
+        "summary": "List Titles",
+        "operationId": "listTitle",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ResponseTitleList"
+          },
+          "400": {
+            "$ref": "#/responses/GenericResFailBadRequest"
+          },
+          "500": {
+            "$ref": "#/responses/GenericResError"
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Titles"
+        ],
+        "summary": "Create a title.",
+        "operationId": "RequestCreateTitle",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "age_certification": {
+                  "type": "string",
+                  "x-go-name": "AgeCertification"
+                },
+                "description": {
+                  "type": "string",
+                  "x-go-name": "Description"
+                },
+                "genres": {
+                  "type": "string",
+                  "x-go-name": "Genres"
+                },
+                "imdb_id": {
+                  "type": "string",
+                  "x-go-name": "IMDBID"
+                },
+                "imdb_score": {
+                  "type": "number",
+                  "format": "double",
+                  "x-go-name": "IMDBScore"
+                },
+                "imdb_votes": {
+                  "type": "number",
+                  "format": "double",
+                  "x-go-name": "IMDBVotes"
+                },
+                "production_countries": {
+                  "type": "string",
+                  "x-go-name": "ProductionCountry"
+                },
+                "release_year": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "ReleaseYear"
+                },
+                "runtime": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "Runtime"
+                },
+                "seasons": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "Seasons"
+                },
+                "title": {
+                  "type": "string",
+                  "x-go-name": "Title"
+                },
+                "tmdb_popularity": {
+                  "type": "number",
+                  "format": "double",
+                  "x-go-name": "TMDBPopularity"
+                },
+                "tmdb_score": {
+                  "type": "number",
+                  "format": "double",
+                  "x-go-name": "TMDBScore"
+                },
+                "type": {
+                  "type": "string",
+                  "x-go-name": "Type"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/ResponseTitle"
+          },
+          "400": {
+            "$ref": "#/responses/GenericResFailBadRequest"
+          },
+          "500": {
+            "$ref": "#/responses/GenericResError"
+          }
+        }
+      }
+    },
+    "/titles/{titleId}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Titles"
+        ],
+        "summary": "Get a title.",
+        "operationId": "RequestGetTitle",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "TitleId",
+            "name": "titleId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ResponseTitle"
+          },
+          "404": {
+            "$ref": "#/responses/GenericResFailNotFound"
+          },
+          "500": {
+            "$ref": "#/responses/GenericResError"
+          }
+        }
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Titles"
+        ],
+        "summary": "Update a title.",
+        "operationId": "RequestUpdateTitle",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "TitleId",
+            "name": "titleId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "age_certification": {
+                  "type": "string",
+                  "x-go-name": "AgeCertification"
+                },
+                "description": {
+                  "type": "string",
+                  "x-go-name": "Description"
+                },
+                "genres": {
+                  "type": "string",
+                  "x-go-name": "Genres"
+                },
+                "imdb_id": {
+                  "type": "string",
+                  "x-go-name": "IMDBID"
+                },
+                "imdb_score": {
+                  "type": "number",
+                  "format": "double",
+                  "x-go-name": "IMDBScore"
+                },
+                "imdb_votes": {
+                  "type": "number",
+                  "format": "double",
+                  "x-go-name": "IMDBVotes"
+                },
+                "production_countries": {
+                  "type": "string",
+                  "x-go-name": "ProductionCountry"
+                },
+                "release_year": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "ReleaseYear"
+                },
+                "runtime": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "Runtime"
+                },
+                "seasons": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "Seasons"
+                },
+                "title": {
+                  "type": "string",
+                  "x-go-name": "Title"
+                },
+                "tmdb_popularity": {
+                  "type": "number",
+                  "format": "double",
+                  "x-go-name": "TMDBPopularity"
+                },
+                "tmdb_score": {
+                  "type": "number",
+                  "format": "double",
+                  "x-go-name": "TMDBScore"
+                },
+                "type": {
+                  "type": "string",
+                  "x-go-name": "Type"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ResponseTitle"
+          },
+          "400": {
+            "$ref": "#/responses/GenericResFailBadRequest"
+          },
+          "404": {
+            "$ref": "#/responses/GenericResFailNotFound"
+          },
+          "500": {
+            "$ref": "#/responses/GenericResError"
+          }
+        }
+      },
+      "delete": {
+        "consumes": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Titles"
+        ],
+        "summary": "Delete a title.",
+        "operationId": "RequestDeleteTitle",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "TitleId",
+            "name": "titleId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ResponseTitle"
+          },
+          "404": {
+            "$ref": "#/responses/GenericResFailNotFound"
+          },
+          "500": {
+            "$ref": "#/responses/GenericResError"
+          }
+        }
+      }
+    },
+    "/titles/{titleId}/credits": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Credits"
+        ],
+        "summary": "List credits by titleId.",
+        "operationId": "RequestGetCreditTitle",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "TitleId",
+            "name": "titleId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ResponseListCredit"
+          },
+          "404": {
+            "$ref": "#/responses/GenericResFailNotFound"
+          },
+          "500": {
+            "$ref": "#/responses/GenericResError"
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Credits"
+        ],
+        "summary": "Create a credit.",
+        "operationId": "RequestCreateCredit",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "TitleId",
+            "name": "titleId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "character": {
+                  "type": "string",
+                  "x-go-name": "Character"
+                },
+                "name": {
+                  "type": "string",
+                  "x-go-name": "Name"
+                },
+                "person_id": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "PersonID"
+                },
+                "role": {
+                  "type": "string",
+                  "x-go-name": "Role"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/ResponseCredit"
+          },
+          "400": {
+            "$ref": "#/responses/GenericResFailBadRequest"
+          },
+          "404": {
+            "$ref": "#/responses/GenericResFailNotFound"
+          },
+          "500": {
+            "$ref": "#/responses/GenericResError"
+          }
+        }
+      }
+    },
+    "/titles/{titleId}/credits/{creditId}": {
+      "get": {
+        "consumes": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Credits"
+        ],
+        "summary": "Get a credit.",
+        "operationId": "RequestGetCredit",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "TitleId",
+            "name": "titleId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "x-go-name": "CreditId",
+            "name": "creditId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ResponseCredit"
+          },
+          "404": {
+            "$ref": "#/responses/GenericResFailNotFound"
+          },
+          "500": {
+            "$ref": "#/responses/GenericResError"
+          }
+        }
+      },
+      "delete": {
+        "consumes": [
+          "application/json"
+        ],
+        "schemes": [
+          "http"
+        ],
+        "tags": [
+          "Credits"
+        ],
+        "summary": "Delete a credit.",
+        "operationId": "RequestDeleteCredit",
+        "parameters": [
+          {
+            "type": "string",
+            "x-go-name": "TitleId",
+            "name": "titleId",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "x-go-name": "CreditId",
+            "name": "creditId",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ResponseDeleteCredit"
+          },
+          "404": {
+            "$ref": "#/responses/GenericResFailNotFound"
+          },
+          "500": {
+            "$ref": "#/responses/GenericResError"
+          }
+        }
       }
     },
     "/users": {
@@ -481,6 +964,79 @@
         }
       }
     },
+    "ResponseCredit": {
+      "description": "",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "character": {
+                "type": "string",
+                "x-go-name": "Character"
+              },
+              "created_at": {
+                "type": "string",
+                "x-go-name": "CreatedAt"
+              },
+              "id": {
+                "type": "string",
+                "x-go-name": "Id"
+              },
+              "name": {
+                "type": "string",
+                "x-go-name": "Name"
+              },
+              "person_id": {
+                "type": "integer",
+                "format": "int64",
+                "x-go-name": "PersonID"
+              },
+              "role": {
+                "type": "string",
+                "x-go-name": "Role"
+              },
+              "title_id": {
+                "type": "string",
+                "x-go-name": "TitleID"
+              },
+              "updated_at": {
+                "type": "string",
+                "x-go-name": "UpdatedAt"
+              }
+            },
+            "x-go-name": "Data"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "x-go-name": "Status"
+          }
+        }
+      }
+    },
+    "ResponseDeleteCredit": {
+      "description": "",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "x-go-name": "Data"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "x-go-name": "Status"
+          }
+        }
+      }
+    },
     "ResponseGetUser": {
       "description": "",
       "schema": {
@@ -520,6 +1076,258 @@
               "updated_at": {
                 "type": "string",
                 "x-go-name": "UpdatedAt"
+              }
+            },
+            "x-go-name": "Data"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "x-go-name": "Status"
+          }
+        }
+      }
+    },
+    "ResponseListCredit": {
+      "description": "",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "character": {
+                  "type": "string",
+                  "x-go-name": "Character"
+                },
+                "created_at": {
+                  "type": "string",
+                  "x-go-name": "CreatedAt"
+                },
+                "id": {
+                  "type": "string",
+                  "x-go-name": "Id"
+                },
+                "name": {
+                  "type": "string",
+                  "x-go-name": "Name"
+                },
+                "person_id": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "PersonID"
+                },
+                "role": {
+                  "type": "string",
+                  "x-go-name": "Role"
+                },
+                "title_id": {
+                  "type": "string",
+                  "x-go-name": "TitleID"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "x-go-name": "UpdatedAt"
+                }
+              }
+            },
+            "x-go-name": "Data"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "x-go-name": "Status"
+          }
+        }
+      }
+    },
+    "ResponseTitle": {
+      "description": "",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "age_certification": {
+                "type": "string",
+                "x-go-name": "AgeCertification"
+              },
+              "created_at": {
+                "type": "string",
+                "x-go-name": "CreatedAt"
+              },
+              "description": {
+                "type": "string",
+                "x-go-name": "Description"
+              },
+              "genres": {
+                "type": "string",
+                "x-go-name": "Genres"
+              },
+              "id": {
+                "type": "string",
+                "x-go-name": "ID"
+              },
+              "imdb_id": {
+                "type": "string",
+                "x-go-name": "IMDBID"
+              },
+              "imdb_score": {
+                "type": "number",
+                "format": "double",
+                "x-go-name": "IMDBScore"
+              },
+              "imdb_votes": {
+                "type": "number",
+                "format": "double",
+                "x-go-name": "IMDBVotes"
+              },
+              "production_countries": {
+                "type": "string",
+                "x-go-name": "ProductionCountry"
+              },
+              "release_year": {
+                "type": "integer",
+                "format": "int64",
+                "x-go-name": "ReleaseYear"
+              },
+              "runtime": {
+                "type": "integer",
+                "format": "int64",
+                "x-go-name": "Runtime"
+              },
+              "seasons": {
+                "type": "integer",
+                "format": "int64",
+                "x-go-name": "Seasons"
+              },
+              "title": {
+                "type": "string",
+                "x-go-name": "Title"
+              },
+              "tmdb_popularity": {
+                "type": "number",
+                "format": "double",
+                "x-go-name": "TMDBPopularity"
+              },
+              "tmdb_score": {
+                "type": "number",
+                "format": "double",
+                "x-go-name": "TMDBScore"
+              },
+              "type": {
+                "type": "string",
+                "x-go-name": "Type"
+              },
+              "updated_at": {
+                "type": "string",
+                "x-go-name": "UpdatedAt"
+              }
+            },
+            "x-go-name": "Data"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "success"
+            ],
+            "x-go-name": "Status"
+          }
+        }
+      }
+    },
+    "ResponseTitleList": {
+      "description": "",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "age_certification": {
+                  "type": "string",
+                  "x-go-name": "AgeCertification"
+                },
+                "created_at": {
+                  "type": "string",
+                  "x-go-name": "CreatedAt"
+                },
+                "description": {
+                  "type": "string",
+                  "x-go-name": "Description"
+                },
+                "genres": {
+                  "type": "string",
+                  "x-go-name": "Genres"
+                },
+                "id": {
+                  "type": "string",
+                  "x-go-name": "ID"
+                },
+                "imdb_id": {
+                  "type": "string",
+                  "x-go-name": "IMDBID"
+                },
+                "imdb_score": {
+                  "type": "number",
+                  "format": "double",
+                  "x-go-name": "IMDBScore"
+                },
+                "imdb_votes": {
+                  "type": "number",
+                  "format": "double",
+                  "x-go-name": "IMDBVotes"
+                },
+                "production_countries": {
+                  "type": "string",
+                  "x-go-name": "ProductionCountry"
+                },
+                "release_year": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "ReleaseYear"
+                },
+                "runtime": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "Runtime"
+                },
+                "seasons": {
+                  "type": "integer",
+                  "format": "int64",
+                  "x-go-name": "Seasons"
+                },
+                "title": {
+                  "type": "string",
+                  "x-go-name": "Title"
+                },
+                "tmdb_popularity": {
+                  "type": "number",
+                  "format": "double",
+                  "x-go-name": "TMDBPopularity"
+                },
+                "tmdb_score": {
+                  "type": "number",
+                  "format": "double",
+                  "x-go-name": "TMDBScore"
+                },
+                "type": {
+                  "type": "string",
+                  "x-go-name": "Type"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "x-go-name": "UpdatedAt"
+                }
               }
             },
             "x-go-name": "Data"

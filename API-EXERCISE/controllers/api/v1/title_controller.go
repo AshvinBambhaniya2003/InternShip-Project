@@ -42,6 +42,22 @@ func NewTitleController(goqu *goqu.Database, logger *zap.Logger, event *events.E
 	}, nil
 }
 
+// TitleList list the titles
+// swagger:route GET /titles Titles listTitle
+//
+//	List Titles
+//
+//	List Titles
+//
+//		Consumes:
+//		- application/json
+//
+//		Schemes: http
+//
+//		Responses:
+//		  200: ResponseTitleList
+//	   400: GenericResFailBadRequest
+//		  500: GenericResError
 func (ctrl *TitleController) List(c *fiber.Ctx) error {
 
 	queries := c.Queries()
@@ -69,6 +85,20 @@ func (ctrl *TitleController) List(c *fiber.Ctx) error {
 	return utils.JSONSuccess(c, http.StatusOK, titles)
 }
 
+// TitleGet get the title by id
+// swagger:route GET /titles/{titleId} Titles RequestGetTitle
+//
+// Get a title.
+//
+//		Consumes:
+//		- application/json
+//
+//		Schemes: http
+//
+//		Responses:
+//		  200: ResponseTitle
+//	   404: GenericResFailNotFound
+//		  500: GenericResError
 func (ctrl *TitleController) GetById(c *fiber.Ctx) error {
 
 	titleID := c.Params(constants.ParamTitleId)
@@ -85,6 +115,20 @@ func (ctrl *TitleController) GetById(c *fiber.Ctx) error {
 	return utils.JSONSuccess(c, http.StatusOK, title)
 }
 
+// TitleDelete delete the title by id
+// swagger:route DELETE /titles/{titleId} Titles RequestDeleteTitle
+//
+// Delete a title.
+//
+//		Consumes:
+//		- application/json
+//
+//		Schemes: http
+//
+//		Responses:
+//		  200: ResponseTitle
+//	   404: GenericResFailNotFound
+//		  500: GenericResError
 func (ctrl *TitleController) Delete(c *fiber.Ctx) error {
 
 	titleID := c.Params(constants.ParamTitleId)
@@ -106,6 +150,20 @@ func (ctrl *TitleController) Delete(c *fiber.Ctx) error {
 	return utils.JSONSuccess(c, http.StatusOK, title)
 }
 
+// CreateTitle create a title
+// swagger:route POST /titles Titles RequestCreateTitle
+//
+// Create a title.
+//
+//		Consumes:
+//		- application/json
+//
+//		Schemes: http
+//
+//		Responses:
+//		  201: ResponseTitle
+//	   400: GenericResFailBadRequest
+//		  500: GenericResError
 func (ctrl *TitleController) Create(c *fiber.Ctx) error {
 
 	var titleReq structs.ReqRegisterTitle
@@ -149,6 +207,21 @@ func (ctrl *TitleController) Create(c *fiber.Ctx) error {
 	return utils.JSONSuccess(c, http.StatusCreated, title)
 }
 
+// UpdateTitle Update a title
+// swagger:route PUT /titles/{titleId} Titles RequestUpdateTitle
+//
+// Update a title.
+//
+//		Consumes:
+//		- application/json
+//
+//		Schemes: http
+//
+//		Responses:
+//		  200: ResponseTitle
+//	   400: GenericResFailBadRequest
+//		  500: GenericResError
+//		404: GenericResFailNotFound
 func (ctrl *TitleController) Update(c *fiber.Ctx) error {
 
 	titleID := c.Params(constants.ParamTitleId)

@@ -48,6 +48,21 @@ func NewCreditController(goqu *goqu.Database, logger *zap.Logger, event *events.
 	}, nil
 }
 
+// CreateCredit create a credit
+// swagger:route POST /titles/{titleId}/credits Credits RequestCreateCredit
+//
+// Create a credit.
+//
+//		Consumes:
+//		- application/json
+//
+//		Schemes: http
+//
+//		Responses:
+//		  201: ResponseCredit
+//	   400: GenericResFailBadRequest
+//		  500: GenericResError
+//	   404: GenericResFailNotFound
 func (ctrl *CreditController) Create(c *fiber.Ctx) error {
 
 	titleID := c.Params(constants.ParamTitleId)
@@ -84,6 +99,20 @@ func (ctrl *CreditController) Create(c *fiber.Ctx) error {
 	return utils.JSONSuccess(c, http.StatusCreated, credit)
 }
 
+// ListCredit list credit by titleId
+// swagger:route GET /titles/{titleId}/credits Credits RequestGetCreditTitle
+//
+// List credits by titleId.
+//
+//		Consumes:
+//		- application/json
+//
+//		Schemes: http
+//
+//		Responses:
+//		  200: ResponseListCredit
+//	   404: GenericResFailNotFound
+//		  500: GenericResError
 func (ctrl *CreditController) ListByTitleId(c *fiber.Ctx) error {
 
 	titleId := c.Params(constants.ParamTitleId)
@@ -96,6 +125,20 @@ func (ctrl *CreditController) ListByTitleId(c *fiber.Ctx) error {
 	return utils.JSONSuccess(c, http.StatusOK, credits)
 }
 
+// GetCredit get a credit by id
+// swagger:route GET /titles/{titleId}/credits/{creditId} Credits RequestGetCredit
+//
+// Get a credit.
+//
+//		Consumes:
+//		- application/json
+//
+//		Schemes: http
+//
+//		Responses:
+//		  200: ResponseCredit
+//	   404: GenericResFailNotFound
+//		  500: GenericResError
 func (ctrl *CreditController) GetById(c *fiber.Ctx) error {
 
 	id := c.Params(constants.ParamCreditId)
@@ -112,6 +155,20 @@ func (ctrl *CreditController) GetById(c *fiber.Ctx) error {
 	return utils.JSONSuccess(c, http.StatusOK, credit)
 }
 
+// DeleteCredit delete a credit by id
+// swagger:route DELETE /titles/{titleId}/credits/{creditId} Credits RequestDeleteCredit
+//
+// Delete a credit.
+//
+//		Consumes:
+//		- application/json
+//
+//		Schemes: http
+//
+//		Responses:
+//		  200: ResponseDeleteCredit
+//	   404: GenericResFailNotFound
+//		  500: GenericResError
 func (ctrl *CreditController) Delete(c *fiber.Ctx) error {
 
 	id := c.Params(constants.ParamCreditId)

@@ -1,7 +1,7 @@
 // Golang API.
 //
-//	Schemes: https
-//	Host: localhost
+//	Schemes: http
+//	Host: localhost:3000
 //	BasePath: /api/v1
 //	Version: 0.0.1-alpha
 //
@@ -17,12 +17,13 @@ package main
 import (
 	"time"
 
+	"github.com/getsentry/sentry-go"
+	"go.uber.org/zap"
+
 	"github.com/Improwised/golang-api/cli"
 	"github.com/Improwised/golang-api/config"
 	"github.com/Improwised/golang-api/logger"
 	"github.com/Improwised/golang-api/routinewrapper"
-	"github.com/getsentry/sentry-go"
-	"go.uber.org/zap"
 )
 
 func main() {
