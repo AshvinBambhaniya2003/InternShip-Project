@@ -3,10 +3,8 @@ package models
 import (
 	"database/sql"
 	"strings"
-	"time"
 
 	"github.com/doug-martin/goqu/v9"
-	"github.com/rs/xid"
 
 	"github.com/Improwised/golang-api/constants"
 )
@@ -32,8 +30,8 @@ type Title struct {
 	IMDBVotes         float64 `json:"imdb_votes" db:"imdb_votes"`
 	TMDBPopularity    float64 `json:"tmdb_popularity" db:"tmdb_popularity"`
 	TMDBScore         float64 `json:"tmdb_score" db:"tmdb_score"`
-	CreatedAt         string  `json:"created_at,omitempty" db:"created_at,omitempty"`
-	UpdatedAt         string  `json:"updated_at,omitempty" db:"updated_at,omitempty"`
+	CreatedAt         string  `json:"created_at,omitempty" db:"created_at" goqu:"omitempty"`
+	UpdatedAt         string  `json:"updated_at,omitempty" db:"updated_at" goqu:"omitempty"`
 }
 
 // TitleModel implements title related database operations
@@ -85,40 +83,14 @@ func (model *TitleModel) List(queries map[string]string, page int) ([]Title, err
 	return titles, err
 }
 
-func (model *TitleModel) Insert(title Title) (Title, error) {
-	title.ID = xid.New().String()
+func (model *TitleModel) Create(title Title) (Title, error) {
 
-	time := time.Now().Format("2006-01-02T15:04:05.999999Z")
-
-	_, err := model.db.Insert(TitleTable).Rows(
-		Title{
-			ID:                title.ID,
-			Title:             title.Title,
-			Type:              title.Type,
-			Description:       title.Description,
-			ReleaseYear:       title.ReleaseYear,
-			AgeCertification:  title.AgeCertification,
-			Runtime:           title.Runtime,
-			Genres:            title.Genres,
-			ProductionCountry: title.ProductionCountry,
-			Seasons:           title.Seasons,
-			IMDBID:            title.IMDBID,
-			IMDBScore:         title.IMDBScore,
-			IMDBVotes:         title.IMDBVotes,
-			TMDBPopularity:    title.TMDBPopularity,
-			TMDBScore:         title.TMDBScore,
-			CreatedAt:         time,
-			UpdatedAt:         time,
-		},
-	).Executor().Exec()
-
+	_, err := model.db.Insert(TitleTable).Rows(title).Executor().Exec()
 	if err != nil {
 		return title, err
 	}
 
-	title, err = model.GetById(title.ID)
-
-	return title, err
+	return model.GetById(title.ID)
 }
 
 // GetById get title by id
@@ -143,7 +115,37 @@ func (model *TitleModel) Delete(id string) error {
 	return err
 }
 
-func (model *TitleModel) Update(id string, title Title) error {
-	_, err := model.db.Update(TitleTable).Set(title).Where(goqu.Ex{"id": id}).Executor().Exec()
-	return err
+func (model *TitleModel) Update(id string, title Title) (Title, error) {
+
+	query := goqu.Update(TitleTable).Set(goqu.Ex{
+		"id":                   title.ID,
+		"title":                title.Title,
+		"type":                 title.Type,
+		"description":          title.Description,
+		"release_year":         title.ReleaseYear,
+		"age_certification":    title.AgeCertification,
+		"runtime":              title.Runtime,
+		"genres":               title.Genres,
+		"production_countries": title.ProductionCountry,
+		"seasons":              title.Seasons,
+		"imdb_id":              title.IMDBID,
+		"imdb_score":           title.IMDBScore,
+		"imdb_votes":           title.IMDBVotes,
+		"tmdb_popularity":      title.TMDBPopularity,
+		"tmdb_score":           title.TMDBScore,
+		"updated_at":           goqu.L("CURRENT_TIMESTAMP"),
+	},
+	).Where(goqu.Ex{"id": id})
+
+	sql, args, err := query.ToSQL()
+	if err != nil {
+		return Title{}, err
+	}
+
+	_, err = model.db.Exec(sql, args...)
+	if err != nil {
+		return Title{}, err
+	}
+
+	return model.GetById(title.ID)
 }

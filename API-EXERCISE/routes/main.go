@@ -34,7 +34,7 @@ func Setup(app *fiber.App, goqu *goqu.Database, logger *zap.Logger, config confi
 	router := app.Group("/api")
 	v1 := router.Group("/v1")
 
-	titleCreditCheckMiddlewares, err := middlewares.NewTitleCreditCheckMiddleware(goqu)
+	titleCreditCheckMiddlewares, err := middlewares.NewTitleCreditCheckMiddleware(goqu, logger)
 	if err != nil {
 		return err
 	}

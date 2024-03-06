@@ -2,10 +2,8 @@ package models
 
 import (
 	"database/sql"
-	"time"
 
 	"github.com/doug-martin/goqu/v9"
-	"github.com/rs/xid"
 )
 
 // CreditTable represent table name
@@ -20,8 +18,8 @@ type Credit struct {
 	Name      string `json:"name" db:"name" validate:"required" `
 	Character string `json:"character" db:"character"`
 	Role      string `json:"role" db:"role" validate:"required"`
-	CreatedAt string `json:"created_at,omitempty" db:"created_at,omitempty"`
-	UpdatedAt string `json:"updated_at,omitempty" db:"updated_at,omitempty"`
+	CreatedAt string `json:"created_at,omitempty" db:"created_at" goqu:"omitempty"`
+	UpdatedAt string `json:"updated_at,omitempty" db:"updated_at" goqu:"omitempty"`
 }
 
 // CreditModel implements credit related database operations
@@ -36,25 +34,14 @@ func InitCreditModel(goqu *goqu.Database) (*CreditModel, error) {
 	}, nil
 }
 
-func (model *CreditModel) Insert(credit Credit) error {
-	id := xid.New().String()
+func (model *CreditModel) Insert(credit Credit) (Credit, error) {
 
-	currentTime := time.Now().Format("2006-01-02T15:04:05.999999Z")
+	_, err := model.db.Insert(CreditTable).Rows(credit).Executor().Exec()
+	if err != nil {
+		return credit, err
+	}
 
-	_, err := model.db.Insert(CreditTable).Rows(
-		Credit{
-			Id:        id,
-			PersonID:  credit.PersonID,
-			TitleID:   credit.TitleID,
-			Name:      credit.Name,
-			Character: credit.Character,
-			Role:      credit.Role,
-			CreatedAt: currentTime,
-			UpdatedAt: currentTime,
-		},
-	).Executor().Exec()
-
-	return err
+	return model.GetById(credit.Id)
 }
 
 func (model *CreditModel) ListCredits(id string) ([]Credit, error) {

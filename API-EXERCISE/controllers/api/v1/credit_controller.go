@@ -7,6 +7,7 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/gofiber/fiber/v2"
+	"github.com/rs/xid"
 	"go.uber.org/zap"
 	"gopkg.in/go-playground/validator.v9"
 
@@ -64,7 +65,10 @@ func (ctrl *CreditController) Create(c *fiber.Ctx) error {
 		return utils.JSONFail(c, http.StatusBadRequest, utils.ValidatorErrorString(err))
 	}
 
-	err = ctrl.creditModel.Insert(models.Credit{
+	id := xid.New().String()
+
+	credit, err := ctrl.creditModel.Insert(models.Credit{
+		Id:        id,
 		PersonID:  creditReq.PersonID,
 		TitleID:   titleID,
 		Name:      creditReq.Name,
@@ -77,7 +81,7 @@ func (ctrl *CreditController) Create(c *fiber.Ctx) error {
 		return utils.JSONError(c, http.StatusInternalServerError, "error while creating Credit, please try after sometime")
 	}
 
-	return utils.JSONSuccess(c, http.StatusCreated, creditReq)
+	return utils.JSONSuccess(c, http.StatusCreated, credit)
 }
 
 func (ctrl *CreditController) ListByTitleId(c *fiber.Ctx) error {
@@ -86,6 +90,7 @@ func (ctrl *CreditController) ListByTitleId(c *fiber.Ctx) error {
 
 	credits, err := ctrl.creditModel.ListCredits(titleId)
 	if err != nil {
+		ctrl.logger.Error("error while getting credits", zap.Error(err))
 		return utils.JSONError(c, http.StatusInternalServerError, "Error while get credit list")
 	}
 	return utils.JSONSuccess(c, http.StatusOK, credits)
@@ -100,6 +105,7 @@ func (ctrl *CreditController) GetById(c *fiber.Ctx) error {
 		if err == sql.ErrNoRows {
 			return utils.JSONFail(c, http.StatusNotFound, "Credit Does not exist")
 		}
+		ctrl.logger.Error("error while get credit by id", zap.Any("id", id), zap.Error(err))
 		return utils.JSONError(c, http.StatusInternalServerError, "Error while Get Credit")
 	}
 
@@ -112,6 +118,7 @@ func (ctrl *CreditController) Delete(c *fiber.Ctx) error {
 
 	err := ctrl.creditModel.Delete(id)
 	if err != nil {
+		ctrl.logger.Error("error while delete credit by id", zap.Any("id", id), zap.Error(err))
 		return utils.JSONError(c, http.StatusInternalServerError, "Error while Delete title")
 	}
 

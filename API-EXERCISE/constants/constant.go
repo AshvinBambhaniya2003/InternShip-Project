@@ -42,11 +42,13 @@ const (
 	Unauthorized       = "unauthorized to access resource"
 	InvalidCredentials = "invalid credenticals"
 	UserNotExist       = "user does not exists"
+	TitleNotExist      = "title does not exists"
 )
 
 // Error messages
 const (
 	ErrGetUser             = "error while get user"
+	ErrGetTitle            = "error while get title"
 	ErrLoginUser           = "error while login user"
 	ErrInsertUser          = "error while creating user, please try after sometime"
 	ErrHealthCheckDb       = "error while checking health of database"

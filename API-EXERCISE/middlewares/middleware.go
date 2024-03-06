@@ -16,9 +16,10 @@ type Middleware struct {
 type TitleCreditCheckMiddleware struct {
 	titleModel  *models.TitleModel
 	creditModel *models.CreditModel
+	logger      *zap.Logger
 }
 
-func NewTitleCreditCheckMiddleware(goqu *goqu.Database) (*TitleCreditCheckMiddleware, error) {
+func NewTitleCreditCheckMiddleware(goqu *goqu.Database, logger *zap.Logger) (*TitleCreditCheckMiddleware, error) {
 	titleModel, err := models.InitTitleModel(goqu)
 	if err != nil {
 		return nil, err
@@ -31,6 +32,7 @@ func NewTitleCreditCheckMiddleware(goqu *goqu.Database) (*TitleCreditCheckMiddle
 	return &TitleCreditCheckMiddleware{
 		titleModel:  titleModel,
 		creditModel: creditModel,
+		logger:      logger,
 	}, nil
 }
 

@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/gofiber/fiber/v2"
+	"github.com/rs/xid"
 	"go.uber.org/zap"
 	"gopkg.in/go-playground/validator.v9"
 
@@ -75,7 +75,11 @@ func (ctrl *TitleController) GetById(c *fiber.Ctx) error {
 
 	title, err := ctrl.titleModel.GetById(titleID)
 	if err != nil {
-		return utils.JSONError(c, http.StatusInternalServerError, "no any title associate with given id")
+		if err == sql.ErrNoRows {
+			return utils.JSONFail(c, http.StatusNotFound, constants.TitleNotExist)
+		}
+		ctrl.logger.Error("error while get title by id", zap.Any("id", titleID), zap.Error(err))
+		return utils.JSONError(c, http.StatusInternalServerError, constants.ErrGetTitle)
 	}
 
 	return utils.JSONSuccess(c, http.StatusOK, title)
@@ -87,12 +91,17 @@ func (ctrl *TitleController) Delete(c *fiber.Ctx) error {
 
 	title, err := ctrl.titleModel.GetById(titleID)
 	if err != nil {
-		return utils.JSONError(c, http.StatusInternalServerError, "no any title associate with given id")
+		if err == sql.ErrNoRows {
+			return utils.JSONFail(c, http.StatusNotFound, constants.TitleNotExist)
+		}
+		ctrl.logger.Error("error while get title by id", zap.Any("id", titleID), zap.Error(err))
+		return utils.JSONError(c, http.StatusInternalServerError, constants.ErrGetTitle)
 	}
 
 	err = ctrl.titleModel.Delete(titleID)
 	if err != nil {
-		return utils.JSONError(c, http.StatusInternalServerError, "Error while Delete title")
+		ctrl.logger.Error("error while delete title", zap.Error(err))
+		return utils.JSONError(c, http.StatusInternalServerError, "error while delete title")
 	}
 	return utils.JSONSuccess(c, http.StatusOK, title)
 }
@@ -112,7 +121,10 @@ func (ctrl *TitleController) Create(c *fiber.Ctx) error {
 		return utils.JSONFail(c, http.StatusBadRequest, utils.ValidatorErrorString(err))
 	}
 
-	title, err := ctrl.titleModel.Insert(models.Title{
+	id := xid.New().String()
+
+	title, err := ctrl.titleModel.Create(models.Title{
+		ID:                id,
 		Title:             titleReq.Title,
 		Type:              titleReq.Type,
 		Description:       titleReq.Description,
@@ -138,14 +150,16 @@ func (ctrl *TitleController) Create(c *fiber.Ctx) error {
 }
 
 func (ctrl *TitleController) Update(c *fiber.Ctx) error {
+
 	titleID := c.Params(constants.ParamTitleId)
 
-	title, err := ctrl.titleModel.GetById(titleID)
+	_, err := ctrl.titleModel.GetById(titleID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return utils.JSONFail(c, http.StatusNotFound, "title not exist")
+			return utils.JSONFail(c, http.StatusNotFound, constants.TitleNotExist)
 		}
-		return utils.JSONError(c, http.StatusInternalServerError, "no any title associate with given id")
+		ctrl.logger.Error("error while get title by id", zap.Any("id", titleID), zap.Error(err))
+		return utils.JSONError(c, http.StatusInternalServerError, constants.ErrGetTitle)
 	}
 
 	var titleReq structs.ReqRegisterTitle
@@ -161,9 +175,7 @@ func (ctrl *TitleController) Update(c *fiber.Ctx) error {
 		return utils.JSONFail(c, http.StatusBadRequest, utils.ValidatorErrorString(err))
 	}
 
-	now := time.Now()
-	timestampString := now.Format("2006-01-02T15:04:05.999999Z")
-	err = ctrl.titleModel.Update(titleID, models.Title{
+	title, err := ctrl.titleModel.Update(titleID, models.Title{
 		ID:                titleID,
 		Title:             titleReq.Title,
 		Type:              titleReq.Type,
@@ -179,11 +191,10 @@ func (ctrl *TitleController) Update(c *fiber.Ctx) error {
 		IMDBVotes:         titleReq.IMDBVotes,
 		TMDBPopularity:    titleReq.TMDBPopularity,
 		TMDBScore:         titleReq.TMDBScore,
-		CreatedAt:         title.CreatedAt,
-		UpdatedAt:         timestampString,
 	})
 	if err != nil {
-		return utils.JSONError(c, http.StatusInternalServerError, "Error while Update title")
+		ctrl.logger.Error("error while update title by id", zap.Error(err))
+		return utils.JSONError(c, http.StatusInternalServerError, "Error while update title")
 	}
-	return utils.JSONSuccess(c, http.StatusOK, titleReq)
+	return utils.JSONSuccess(c, http.StatusOK, title)
 }

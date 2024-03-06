@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 
 	"github.com/Improwised/golang-api/constants"
 	"github.com/Improwised/golang-api/utils"
@@ -19,6 +20,7 @@ func (t *TitleCreditCheckMiddleware) TitleExist(c *fiber.Ctx) error {
 		if err == sql.ErrNoRows {
 			return utils.JSONFail(c, http.StatusNotFound, "Title Does not exist")
 		}
+		t.logger.Error("error while get title by id", zap.Any("id", id), zap.Error(err))
 		return utils.JSONError(c, http.StatusInternalServerError, "Error while Get Title")
 	}
 
@@ -34,6 +36,7 @@ func (t *TitleCreditCheckMiddleware) CreditTitleVerification(c *fiber.Ctx) error
 		if err == sql.ErrNoRows {
 			return utils.JSONFail(c, http.StatusNotFound, "Title Does not exist")
 		}
+		t.logger.Error("error while get title by id", zap.Any("id", titleId), zap.Error(err))
 		return utils.JSONError(c, http.StatusInternalServerError, "Error while Get Title")
 	}
 
@@ -44,6 +47,7 @@ func (t *TitleCreditCheckMiddleware) CreditTitleVerification(c *fiber.Ctx) error
 		if err == sql.ErrNoRows {
 			return utils.JSONFail(c, http.StatusNotFound, "Credit Does not exist")
 		}
+		t.logger.Error("error while get credit by id", zap.Any("id", creditId), zap.Error(err))
 		return utils.JSONError(c, http.StatusInternalServerError, "error while get Credit")
 	}
 
