@@ -11,6 +11,15 @@
           <li class="nav-item">
             <a class="nav-link" aria-current="page" @click="activeTab = 'home'" href="#">Home</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" @click="activeTab = 'detail'" href="#">Detail</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" @click="activeTab = 'timezone'" href="#">Timezone</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" @click="activeTab = 'astronomy'" href="#">Astronomy</a>
+          </li>
         </ul>
         <div class="d-flex" role="search" v-if="activeTab === 'home'">
           <input type="search" class="form-control me-2" v-model="ipAddress" placeholder="Search" aria-label="Search">
@@ -34,6 +43,74 @@
         <button class="btn btn-primary btn-sm mt-2" @click="SaveData">Save Data</button>
       </div>
     </div>
+
+    <div v-if="activeTab === 'detail'" class="mb-4">
+      <div v-if="geolocation">
+        <div class="card">
+          <div class="card-header">
+            <h2>{{ geolocation.city }}, {{ geolocation.country_name }}</h2>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <h3>Location Details</h3>
+                  <p><strong>Continent:</strong> {{ geolocation.continent_name }}</p>
+                  <p><strong>Country:</strong> {{ geolocation.country_name }}</p>
+                  <p><strong>Country Code:</strong> {{ geolocation.country_code2 }}</p>
+                  <p><strong>State/Province:</strong> {{ geolocation.state_prov }}</p>
+                  <p><strong>City:</strong> {{ geolocation.city }}</p>
+                  <p><strong>Zipcode:</strong> {{ geolocation.zipcode }}</p>
+                  <p><strong>Latitude:</strong> {{ geolocation.latitude }}</p>
+                  <p><strong>Longitude:</strong> {{ geolocation.longitude }}</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <h3>Organization</h3>
+                  <p><strong>ISP:</strong> {{ geolocation.isp }}</p>
+                  <p><strong>Organization:</strong> {{ geolocation.organization }}</p>
+                </div>
+                <div class="mb-3">
+                  <h3>Currency</h3>
+                  <p><strong>Code:</strong> {{ geolocation.currency.code }}</p>
+                  <p><strong>Name:</strong> {{ geolocation.currency.name }}</p>
+                  <p><strong>Symbol:</strong> {{ geolocation.currency.symbol }}</p>
+                </div>
+                <div class="mb-3">
+                  <img :src="geolocation.country_flag" alt="Flag" class="img-fluid">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="activeTab === 'timezone'" class="mb-4">
+      <h2>Timezone Tab</h2>
+      <div v-if="timezone">
+        <div>
+          <p><strong>Timezone:</strong> {{ timezone.timezone }}</p>
+          <p><strong>Offset:</strong> {{ timezone.timezone_offset }}</p>
+          <p><strong>Offset with DST:</strong> {{ timezone.timezone_offset_with_dst }}</p>
+          <p><strong>Date:</strong> {{ timezone.date }}</p>
+          <p><strong>Time:</strong> {{ timezone.time_24 }}</p>
+          <p><strong>Is DST:</strong> {{ timezone.is_dst }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="activeTab === 'astronomy'" class="mb-4">
+      <h2>Astronomy Tab</h2>
+      <div v-if="astronomy">
+        <p>Moon Rise: {{ astronomy.moonrise }}</p>
+        <p>Moon Set: {{ astronomy.moonset }}</p>
+        <p>Sunrise: {{ astronomy.sunrise }}</p>
+        <p>Sunset: {{ astronomy.sunset }}</p>
+        <p>Day Length: {{ astronomy.day_length }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -47,7 +124,7 @@ const JSON_SERVER_URL = import.meta.env.VITE_JSON_SERVER_URL;
 // Fetches geolocation information for a given IP address using the IPGeolocation API.
 async function fetchGeolocation(ip) {
   try {
-    const geolocationInfo = await fetch(`${GEOLOCATION_API_URL}?apiKey=${API_KEY}&ip=${ip}`);
+    const geolocationInfo = await fetch(`${GEOLOCATION_API_URL}/ipgeo?apiKey=${API_KEY}&ip=${ip}`);
     if (!geolocationInfo.ok) {
       throw new Error('Network response was not ok');
     }
@@ -72,11 +149,39 @@ function fetchData(ipAddress) {
     });
 }
 
+// Fetches timezone information for a given location using the IPGeolocation API.
+async function fetchTimezone(location) {
+  try {
+    const response = await fetch(`${GEOLOCATION_API_URL}/timezone?apiKey=${API_KEY}&location=${location}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return await response.json();
+  } catch (error) {
+    throw new Error('Error fetching timezone information');
+  }
+}
+
+// Fetches astronomy information for a given location using the IPGeolocation API.
+async function fetchAstronomy(location) {
+  try {
+    const response = await fetch(`${GEOLOCATION_API_URL}/astronomy?apiKey=${API_KEY}&location=${location}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return await response.json();
+  } catch (error) {
+    throw new Error('Error fetching astronomy information');
+  }
+}
+
 const activeTab = ref('home');
 const ipAddress = ref('');
 const geolocation = ref(null);
 const loading = ref(false);
 const errorMessage = ref('');
+const timezone = ref(null)
+const astronomy = ref(null);
 
 // Asynchronously performs a search based on the entered IP address, updating loading state and handling errors.
 const search = async () => {
@@ -96,6 +201,8 @@ const search = async () => {
           errorMessage.value = '';
         });
     }
+    timezone.value = await fetchTimezone(geolocation.value.city);
+    astronomy.value = await fetchAstronomy(geolocation.value.city);
 
   } catch (error) {
     geolocation.value = null;
