@@ -20,6 +20,9 @@
           <li class="nav-item">
             <a class="nav-link" @click="activeTab = 'astronomy'" href="#">Astronomy</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" @click="activeTab = 'multiIpSearch'" href="#">MultiIpSearch</a>
+          </li>
         </ul>
         <div class="d-flex" role="search" v-if="activeTab === 'home'">
           <input type="search" class="form-control me-2" v-model="ipAddress" placeholder="Search" aria-label="Search">
@@ -40,7 +43,7 @@
         <div>
           <Map :latitude="geolocation.latitude" :longitude="geolocation.longitude" />
         </div>
-        <button class="btn btn-primary btn-sm mt-2" @click="SaveData">Save Data</button>
+        <button class="btn btn-primary btn-sm mt-2" @click="SaveData(geolocation)">Save Data</button>
       </div>
     </div>
 
@@ -111,6 +114,42 @@
         <p>Day Length: {{ astronomy.day_length }}</p>
       </div>
     </div>
+
+    <div v-if="activeTab === 'multiIpSearch'">
+      <div class="container mt-5">
+        <div class="mb-3">
+          <label for="ipAddresses">Enter IP Addresses (comma-separated):</label>
+          <input class="form-control" id="ipAddresses" v-model="multipleIPs" />
+        </div>
+        <button class="btn btn-primary" @click="searchMultipleIPs">Search</button>
+      </div>
+      <div v-if="loading" class="alert alert-info">Loading...</div>
+      <div v-if="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+      <div v-if="locations.length > 0" class="row mt-5">
+        <div class="col-md-6">
+          <div class="mb-4">
+            <Map :locations="locations" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-4">
+            <div v-for="(location, index) in locations" :key="index" class="card mb-3">
+              <div class="card-header">
+                {{ location.city }}, {{ location.country_name }}
+                <button class="btn btn-primary btn-sm float-end" @click="SaveData(location)">Pin</button>
+              </div>
+              <div class="card-body">
+                <p>Latitude: {{ location.latitude }}</p>
+                <p>Longitude: {{ location.longitude }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
   </div>
 </template>
 
@@ -182,6 +221,8 @@ const loading = ref(false);
 const errorMessage = ref('');
 const timezone = ref(null)
 const astronomy = ref(null);
+const locations = ref([]);
+const multipleIPs = ref('');
 
 // Asynchronously performs a search based on the entered IP address, updating loading state and handling errors.
 const search = async () => {
@@ -217,22 +258,67 @@ onMounted(() => {
 })
 
 // Save geolocation data to the json file
-const SaveData = () => {
-  fetchData(geolocation.value.ip)
+const SaveData = (geolocationData) => {
+  fetchData(geolocationData.ip)
     .then(geolocationInfo => {
       // Handle successful response
       console.log('Data fetched successfully:', geolocationInfo);
     })
     .catch(error => {
-      geolocation.value.id = geolocation.value.ip
+      geolocationData.id = geolocationData.ip
       fetch(`${JSON_SERVER_URL}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(geolocation.value)
+        body: JSON.stringify(geolocationData)
       }).catch(error => console.error('Error:', error));
     });
+};
+
+// performs a search based on the entered IP addresses, updating loading state and handling errors.
+const searchMultipleIPs = async () => {
+  errorMessage.value = ''
+  const ipAddresses = multipleIPs.value.split(',');
+
+  // Validate IP addresses
+  const validIPs = ipAddresses.filter(ip => {
+    if (!isValidIPAddress(ip.trim())) {
+      errorMessage.value = 'Please enter valid ip';
+    }
+    return isValidIPAddress(ip.trim())
+  })
+
+  if (errorMessage.value) {
+    return
+  }
+
+  loading.value = true;
+  const promises = validIPs.map(async (ip) => {
+    return await fetchData(ip)
+      .then(multipleIPsGeolocationInfo => {
+        return multipleIPsGeolocationInfo
+      })
+      .catch(async (error) => {
+        return await fetchGeolocation(ip.trim())
+      });
+  })
+  try {
+    const results = await Promise.all(promises);
+    errorMessage.value = '';
+    locations.value = results;
+  } catch (error) {
+    locations.value = null;
+    errorMessage.value = error.message;
+    console.error('Error fetching geolocation information:', error);
+  }
+  loading.value = false;
+};
+
+// Function to validate IP address
+const isValidIPAddress = (ip) => {
+  const ipAddressPattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
+  return ipAddressPattern.test(ip);
 };
 
 </script>
