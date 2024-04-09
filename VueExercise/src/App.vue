@@ -23,6 +23,9 @@
           <li class="nav-item">
             <a class="nav-link" @click="activeTab = 'multiIpSearch'" href="#">MultiIpSearch</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" @click="activeTab = 'listGeolocation'" href="#">ListGeolocation</a>
+          </li>
         </ul>
         <div class="d-flex" role="search" v-if="activeTab === 'home'">
           <input type="search" class="form-control me-2" v-model="ipAddress" placeholder="Search" aria-label="Search">
@@ -148,6 +151,9 @@
       </div>
     </div>
 
+    <div v-if="activeTab === 'listGeolocation'" class="mb-4">
+      <ListData />
+    </div>
 
 
   </div>
@@ -156,6 +162,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import Map from './components/Map.vue'
+import ListData from './components/ListData.vue';
 const GEOLOCATION_API_URL = import.meta.env.VITE_GEOLOCATION_API_URL;
 const API_KEY = import.meta.env.VITE_API_KEY;
 const JSON_SERVER_URL = import.meta.env.VITE_JSON_SERVER_URL;
