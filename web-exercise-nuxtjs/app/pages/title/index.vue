@@ -4,7 +4,7 @@
         <div v-if="deleteMessage" class="alert alert-success">{{ deleteMessage }}</div>
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <NuxtLink to="/title/add" class="btn btn-outline-primary">Create New Title/Movie</NuxtLink>
+                <NuxtLink to="/title/add" class="btn btn-outline-primary">Create New Movie/Show</NuxtLink>
                 <div class="row">
                     <div class="col-4">
                         <input type="text" v-model="title.title" class="form-control" id="title" name="title"
@@ -53,9 +53,9 @@
                             <td>{{ title.runtime }}</td>
                             <td>{{ title.imdb_score }}</td>
                             <td>
-                                <NuxtLink :to="`title/${title.id}`" class="btn btn-outline-info btn-sm mx-1">Detail
+                                <NuxtLink :to="`/title/${title.id}`" class="btn btn-outline-info btn-sm mx-1">Detail
                                 </NuxtLink>
-                                <NuxtLink :to="`title/${title.id}/edit`" class="btn btn-outline-success btn-sm mx-1">
+                                <NuxtLink :to="`/title/${title.id}/edit`" class="btn btn-outline-success btn-sm mx-1">
                                     Edit
                                 </NuxtLink>
                                 <button @click="deleteTitle(title.id)" class="btn btn-outline-danger btn-sm mx-1">
