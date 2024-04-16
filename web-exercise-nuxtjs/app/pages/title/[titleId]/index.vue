@@ -28,7 +28,10 @@
                 <p class="card-text"><strong>TMDB Popularity:</strong> {{ titleData.tmdb_popularity }}</p>
                 <p class="card-text"><strong>TMDB Score:</strong> {{ titleData.tmdb_score }}</p>
             </div>
-
+            <div class="text-center mb-2">
+                <NuxtLink :to="`/title/${titleId}/credit`" class="btn btn-outline-primary btn-sm mx-1">Show Credits
+                </NuxtLink>
+            </div>
         </div>
     </div>
 
