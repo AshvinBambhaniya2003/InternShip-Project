@@ -3,7 +3,7 @@
         <h2 class="text-center mt-5 mb-3">Create New Credit</h2>
         <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
         <div class="card">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-end">
                 <NuxtLink class="btn btn-outline-info float-right" :to="`/title/${titleId}/credit`">View All Credits
                 </NuxtLink>
             </div>
