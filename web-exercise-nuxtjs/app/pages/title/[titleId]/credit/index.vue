@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <h2 class="text-center mt-5 mb-3">List Credits</h2>
+        <h5 class="text-center my-3">List Credits</h5>
         <div v-if="deleteMessage" class="alert alert-success">{{ deleteMessage }}</div>
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -8,7 +8,7 @@
                 </NuxtLink>
             </div>
             <div class="card-body">
-                <table class="table table-bordered text-center">
+                <table class="table table-bordered text-center text-light">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -31,10 +31,10 @@
                             <td>{{ credit.role }}</td>
                             <td>
                                 <NuxtLink :to="`/title/${credit.title_id}/credit/${credit.id}`"
-                                    class="btn btn-outline-info btn-sm mx-1">Detail
+                                    class="btn btn-outline-light btn-sm mx-1">Detail
                                 </NuxtLink>
                                 <NuxtLink :to="`/title/${credit.title_id}/credit/${credit.id}/edit`"
-                                    class="btn btn-outline-success btn-sm mx-1">
+                                    class="btn btn-outline-primary btn-sm mx-1">
                                     Edit
                                 </NuxtLink>
                                 <button @click="deleteCredit(credit.id)" class="btn btn-outline-danger btn-sm mx-1">

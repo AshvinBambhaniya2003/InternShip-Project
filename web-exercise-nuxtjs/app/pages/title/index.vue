@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <h2 class="text-center mt-5 mb-3">List Movie/Show</h2>
+        <h5 class="text-center my-3">List Movie/Show</h5>
         <div v-if="deleteMessage" class="alert alert-success">{{ deleteMessage }}</div>
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-bordered text-center">
+                <table class="table table-bordered text-center text-light">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -53,9 +53,9 @@
                             <td>{{ title.runtime }}</td>
                             <td>{{ title.imdb_score }}</td>
                             <td>
-                                <NuxtLink :to="`/title/${title.id}`" class="btn btn-outline-info btn-sm mx-1">Detail
+                                <NuxtLink :to="`/title/${title.id}`" class="btn btn-outline-light btn-sm mx-1">Detail
                                 </NuxtLink>
-                                <NuxtLink :to="`/title/${title.id}/edit`" class="btn btn-outline-success btn-sm mx-1">
+                                <NuxtLink :to="`/title/${title.id}/edit`" class="btn btn-outline-primary btn-sm mx-1">
                                     Edit
                                 </NuxtLink>
                                 <button @click="deleteTitle(title.id)" class="btn btn-outline-danger btn-sm mx-1">

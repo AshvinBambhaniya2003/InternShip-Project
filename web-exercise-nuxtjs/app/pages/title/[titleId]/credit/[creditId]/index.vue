@@ -12,11 +12,14 @@
                 class="card-img-top" alt="" />
             <div class="card-body">
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
+                    <li class="list-group-item text-light credit-li">
                         <h5 class="card-title">{{ credit.name }}</h5>
                     </li>
-                    <li class="list-group-item"><strong>Character:</strong> {{ credit.character }} </li>
-                    <li class="list-group-item"><strong>Role:</strong> {{ credit.role }} </li>
+                    <li class="list-group-item text-light credit-li"><strong>Character:</strong>
+                        {{ credit.character }}
+                    </li>
+                    <li class="list-group-item text-light credit-li"><strong>Role:</strong> {{ credit.role }}
+                    </li>
                 </ul>
             </div>
         </div>
@@ -35,3 +38,9 @@ const { titleId, creditId } = useRoute().params
 const { pending, data: { value: { data: credit } }, error } = await useFetch(`${API_URL}/titles/${titleId}/credits/${creditId}`)
 
 </script>
+
+<style scoped>
+.credit-li {
+    background: #2a2b2e;
+}
+</style>
