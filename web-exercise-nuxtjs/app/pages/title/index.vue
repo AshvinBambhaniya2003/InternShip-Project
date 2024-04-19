@@ -106,16 +106,17 @@ const filterTitle = async () => {
 
 // Function to handle deletion of a title by ID
 const deleteTitle = async (id) => {
+    if (confirm('Are you sure you want to delete this record?')) {
+        await useFetch(`${API_URL}/titles/${id}`, {
+            method: 'DELETE'
+        })
+        deleteMessage.value = 'Delete succesfully'
 
-    await useFetch(`${API_URL}/titles/${id}`, {
-        method: 'DELETE'
-    })
-    deleteMessage.value = 'Delete succesfully'
-
-    setTimeout(() => {
-        deleteMessage.value = ''
-    }, 2000);
-    refresh()
+        setTimeout(() => {
+            deleteMessage.value = ''
+        }, 2000);
+        refresh()
+    }
 }
 
 // Get API_URL from .env

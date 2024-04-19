@@ -53,6 +53,7 @@
 
 // Function to handle deletion of a title by ID
 const deleteCredit = async (creditId) => {
+    if (confirm('Are you sure you want to delete this record?')) {
     await useFetch(`${API_URL}/titles/${titleId}/credits/${creditId}`, {
         method: 'DELETE'
     })
@@ -62,6 +63,7 @@ const deleteCredit = async (creditId) => {
         deleteMessage.value = ''
     }, 2000);
     refresh()
+}
 }
 
 // Get API_URL from .env
