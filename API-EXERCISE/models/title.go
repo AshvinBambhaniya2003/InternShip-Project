@@ -56,7 +56,7 @@ func (model *TitleModel) List(queries map[string]string, page int) ([]Title, err
 			query = query.Where(goqu.Func("LOWER", goqu.I("title")).Like("%" + strings.ToLower(value) + "%"))
 		}
 
-		if key == constants.TitleType {
+		if (key == constants.TitleType) && value != "" {
 			query = query.Where(goqu.Ex{"type": value})
 		}
 	}

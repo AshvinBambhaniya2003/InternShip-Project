@@ -70,3 +70,28 @@ func (model *CreditModel) Delete(id string) error {
 	_, err := model.db.Delete(CreditTable).Where(goqu.Ex{"id": id}).Executor().Exec()
 	return err
 }
+
+func (model *CreditModel) Update(id string, credit Credit) (Credit, error) {
+	query := goqu.Update(CreditTable).Set(goqu.Ex{
+		"id":         credit.Id,
+		"person_id":  credit.PersonID,
+		"title_id":   credit.TitleID,
+		"name":       credit.Name,
+		"character":  credit.Character,
+		"role":       credit.Role,
+		"updated_at": goqu.L("CURRENT_TIMESTAMP"),
+	},
+	).Where(goqu.Ex{"id": id})
+
+	sql, args, err := query.ToSQL()
+	if err != nil {
+		return Credit{}, err
+	}
+
+	_, err = model.db.Exec(sql, args...)
+	if err != nil {
+		return Credit{}, err
+	}
+
+	return model.GetById(credit.Id)
+}

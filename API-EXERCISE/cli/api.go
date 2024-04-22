@@ -13,6 +13,7 @@ import (
 	"github.com/Improwised/golang-api/pkg/watermill"
 	"github.com/Improwised/golang-api/routes"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/spf13/cobra"
 
 	pMetrics "github.com/Improwised/golang-api/pkg/prometheus"
@@ -29,6 +30,12 @@ func GetAPICommandDef(cfg config.AppConfig, logger *zap.Logger) cobra.Command {
 			// Create fiber app
 			app := fiber.New(fiber.Config{})
 
+			app.Use(cors.New(cors.Config{
+				AllowOrigins: "*",
+				AllowMethods: "GET,POST,PUT,DELETE",
+				AllowHeaders: "Content-Type, Authorization",
+			}))
+
 			promMetrics := pMetrics.InitPrometheusMetrics()
 
 			// Init eventbus
@@ -44,7 +51,7 @@ func GetAPICommandDef(cfg config.AppConfig, logger *zap.Logger) cobra.Command {
 				return err
 			}
 
-			pub, err := watermill.InitPublisher(cfg,false)
+			pub, err := watermill.InitPublisher(cfg, false)
 			if err != nil {
 				return err
 			}

@@ -181,3 +181,36 @@ func (ctrl *CreditController) Delete(c *fiber.Ctx) error {
 
 	return utils.JSONSuccess(c, http.StatusOK, "Suceesfully Deleted")
 }
+
+func (ctrl *CreditController) Update(c *fiber.Ctx) error {
+
+	titleID := c.Params(constants.ParamTitleId)
+	creditId := c.Params(constants.ParamCreditId)
+
+	var creditReq structs.ReqRegisterCredit
+
+	err := json.Unmarshal(c.Body(), &creditReq)
+	if err != nil {
+		return utils.JSONFail(c, http.StatusBadRequest, err.Error())
+	}
+
+	validate := validator.New()
+	err = validate.Struct(creditReq)
+	if err != nil {
+		return utils.JSONFail(c, http.StatusBadRequest, utils.ValidatorErrorString(err))
+	}
+
+	credit, err := ctrl.creditModel.Update(creditId, models.Credit{
+		Id:        creditId,
+		PersonID:  creditReq.PersonID,
+		TitleID:   titleID,
+		Name:      creditReq.Name,
+		Character: creditReq.Character,
+		Role:      creditReq.Role,
+	})
+	if err != nil {
+		ctrl.logger.Error("error while update credit by id", zap.Error(err))
+		return utils.JSONError(c, http.StatusInternalServerError, "Error while update credit")
+	}
+	return utils.JSONSuccess(c, http.StatusOK, credit)
+}
